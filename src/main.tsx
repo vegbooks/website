@@ -1,6 +1,9 @@
 import { createSPA, hydrateSPA } from '@askrjs/askr/boot';
-import { routeRegistry } from './pages/_routes';
+import { createVegbooksRouteRegistry } from './pages/_routes';
+import { siteBasePath } from './site-base';
 import './styles.css';
+
+const routeRegistry = createVegbooksRouteRegistry(siteBasePath);
 
 async function main() {
   const root = document.getElementById('app');

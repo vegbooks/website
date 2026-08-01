@@ -6,6 +6,7 @@ import { Input, Label } from '@askrjs/themes/components';
 import { ContentLayout } from '../components/content-layout';
 import { SearchEngine } from '../search';
 import type { SearchIndex } from '../search/types';
+import { sitePath } from '../site-base';
 
 export function SearchPage() {
   const route = currentRoute();
@@ -18,11 +19,13 @@ export function SearchPage() {
   const search = resource(
     ({ signal }) => {
       if (typeof window === 'undefined') return null;
-      return fetch('/search-index.json', { signal }).then(async (response) => {
-        if (!response.ok)
-          throw new Error(`Search index returned ${response.status}`);
-        return new SearchEngine((await response.json()) as SearchIndex);
-      });
+      return fetch(sitePath('/search-index.json'), { signal }).then(
+        async (response) => {
+          if (!response.ok)
+            throw new Error(`Search index returned ${response.status}`);
+          return new SearchEngine((await response.json()) as SearchIndex);
+        }
+      );
     },
     [browserReady]
   );
@@ -100,7 +103,9 @@ export function SearchPage() {
               {result?.hits.map((hit) => (
                 <li key={hit.document.id}>
                   <h2>
-                    <a href={hit.document.url}>{hit.document.title}</a>
+                    <a href={sitePath(hit.document.url)}>
+                      {hit.document.title}
+                    </a>
                   </h2>
                   {hit.document.summary && <p>{hit.document.summary}</p>}
                   <p class="post-meta">

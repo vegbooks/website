@@ -1,4 +1,5 @@
 import type { ArticleSummary } from '../content/types';
+import { sitePath } from '../site-base';
 
 export function ArticleMeta({ article }: { article: ArticleSummary }) {
   return (
@@ -6,7 +7,8 @@ export function ArticleMeta({ article }: { article: ArticleSummary }) {
       <time datetime={article.publishedAt}>{article.publishedLabel}</time>
       <span aria-hidden="true"> · </span>
       <span>
-        Review by <a href={article.reviewer.url}>{article.reviewer.name}</a>
+        Review by{' '}
+        <a href={sitePath(article.reviewer.url)}>{article.reviewer.name}</a>
       </span>
       {article.categories.length > 0 && (
         <>
@@ -14,7 +16,7 @@ export function ArticleMeta({ article }: { article: ArticleSummary }) {
           {article.categories.map((category, index) => (
             <span key={category.slug}>
               {index > 0 && <span aria-hidden="true">, </span>}
-              <a href={category.url}>{category.name}</a>
+              <a href={sitePath(category.url)}>{category.name}</a>
             </span>
           ))}
         </>

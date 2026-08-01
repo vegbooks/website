@@ -34,6 +34,7 @@ jobs:
           cache-dependency-path: package-lock.json
 
       - name: Configure GitHub Pages
+        id: pages
         uses: actions/configure-pages@v6
 
       - name: Install dependencies
@@ -50,6 +51,8 @@ jobs:
 
       - name: Build site
         run: npm run build
+        env:
+          SITE_BASE_PATH: ${{ steps.pages.outputs.base_path }}
 
       - name: Analyze
         run: npm run analyze

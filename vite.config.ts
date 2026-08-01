@@ -6,7 +6,9 @@ function askrPlugin(): PluginOption {
 }
 
 export default function config(): UserConfig {
+  const basePath = normalizeBasePath(process.env.SITE_BASE_PATH);
   return {
+    base: basePath ? `${basePath}/` : '/',
     plugins: [askrPlugin()],
     lint: {
       ignorePatterns: ['.askr/**', 'dist/**', 'node_modules/**'],
@@ -33,4 +35,9 @@ export default function config(): UserConfig {
       sourcemap: true,
     },
   };
+}
+
+function normalizeBasePath(value: string | undefined): string {
+  if (!value || value === '/') return '';
+  return `/${value}`.replace(/\/{2,}/g, '/').replace(/\/$/, '');
 }

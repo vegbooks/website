@@ -7,6 +7,7 @@ import type {
   PostMetadata,
   SidebarModel,
 } from '../content/types';
+import { sitePath } from '../site-base';
 
 export function ArticleTemplate({
   article,
@@ -30,12 +31,14 @@ export function ArticleTemplate({
           <nav class="article-neighbors" aria-label="Adjacent reviews">
             <span>
               {article.previous && (
-                <a href={article.previous.url}>← {article.previous.title}</a>
+                <a href={sitePath(article.previous.url)}>
+                  ← {article.previous.title}
+                </a>
               )}
             </span>
             <span>
               {article.next && (
-                <a href={article.next.url}>{article.next.title} →</a>
+                <a href={sitePath(article.next.url)}>{article.next.title} →</a>
               )}
             </span>
           </nav>

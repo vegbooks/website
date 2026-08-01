@@ -1,10 +1,11 @@
 import { state, type Props } from '@askrjs/askr';
 import { SearchIcon } from '@askrjs/lucide/icons/search';
 import { currentRoute, Link } from '@askrjs/askr/router';
+import { sitePath, stripSiteBase } from '../site-base';
 
 export function SiteLayout({ children }: Props) {
   const [menuOpen, setMenuOpen] = state(false);
-  const active = currentRoute().path;
+  const active = stripSiteBase(currentRoute().path);
   const navItems = [
     ['Home', '/'],
     ['Favorites', '/favorites/'],
@@ -35,9 +36,13 @@ export function SiteLayout({ children }: Props) {
       </a>
       <div class="site-shell">
         <header class="site-header">
-          <Link class="wordmark" href="/" aria-label="Vegbooks home">
+          <Link
+            class="wordmark"
+            href={sitePath('/')}
+            aria-label="Vegbooks home"
+          >
             <img
-              src="/assets/vegbooks-id.png"
+              src={sitePath('/assets/vegbooks-id.png')}
               alt="Vegbooks"
               width="2040"
               height="1047"
@@ -61,7 +66,7 @@ export function SiteLayout({ children }: Props) {
               <Link
                 key={href}
                 aria-current={isActive(active, href) ? 'page' : undefined}
-                href={href}
+                href={sitePath(href)}
                 onClick={() => setMenuOpen(false)}
               >
                 {label}
@@ -71,7 +76,7 @@ export function SiteLayout({ children }: Props) {
               class="site-nav__search"
               aria-label="Search"
               aria-current={isActive(active, '/search/') ? 'page' : undefined}
-              href="/search/"
+              href={sitePath('/search/')}
               title="Search"
               onClick={() => setMenuOpen(false)}
             >
@@ -87,7 +92,7 @@ export function SiteLayout({ children }: Props) {
                   rel="noopener noreferrer"
                   aria-label={`Vegbooks on ${label}`}
                 >
-                  <img src={icon} alt="" width="24" height="24" />
+                  <img src={sitePath(icon)} alt="" width="24" height="24" />
                 </a>
               ))}
             </span>

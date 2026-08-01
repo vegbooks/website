@@ -17,6 +17,7 @@ import {
   CollectionTemplate,
   EditorialPageTemplate,
 } from '../templates';
+import { prefixElementSiteUrls, sitePath } from '../site-base';
 
 export function CollectionRoutePage() {
   const data = routeData<CollectionRouteData>();
@@ -26,6 +27,7 @@ export function CollectionRoutePage() {
 }
 
 export function createArticleRoutePage(Post: PostComponent) {
+  const SitePost = () => prefixElementSiteUrls(Post());
   return function ArticleRoutePage() {
     const data = routeData<{
       article: PostMetadata;
@@ -34,7 +36,7 @@ export function createArticleRoutePage(Post: PostComponent) {
     return (
       <ArticleTemplate
         article={data.article}
-        Post={Post}
+        Post={SitePost}
         sidebar={data.sidebar}
       />
     );
@@ -70,7 +72,7 @@ export function DirectoryRoutePage() {
           <ul class="term-directory term-directory--topics">
             {data.manifest.topics.map((topic) => (
               <li key={topic.slug}>
-                <a href={topic.url}>{topic.name}</a>{' '}
+                <a href={sitePath(topic.url)}>{topic.name}</a>{' '}
                 <span>({topic.count})</span>
               </li>
             ))}
@@ -81,7 +83,7 @@ export function DirectoryRoutePage() {
             <ul class="term-directory">
               {data.manifest.reviewers.map((reviewer) => (
                 <li key={reviewer.slug}>
-                  <a href={reviewer.url}>{reviewer.name}</a>{' '}
+                  <a href={sitePath(reviewer.url)}>{reviewer.name}</a>{' '}
                   <span>({reviewer.count})</span>
                 </li>
               ))}
@@ -104,7 +106,7 @@ export function DirectoryRoutePage() {
           <ul class="year-directory">
             {data.manifest.years.map((year) => (
               <li key={year.year}>
-                <a href={year.url}>{year.year}</a>
+                <a href={sitePath(year.url)}>{year.year}</a>
                 <span>{year.count} reviews</span>
               </li>
             ))}

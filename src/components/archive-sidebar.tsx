@@ -1,4 +1,5 @@
 import type { SidebarModel } from '../content/types';
+import { sitePath } from '../site-base';
 
 export function ArchiveSidebar({ sidebar }: { sidebar: SidebarModel }) {
   return (
@@ -14,7 +15,7 @@ export function ArchiveSidebar({ sidebar }: { sidebar: SidebarModel }) {
             <ul>
               {section.links.map((link) => (
                 <li key={link.url}>
-                  <a href={link.url}>{link.label}</a>
+                  <a href={sitePath(link.url)}>{link.label}</a>
                 </li>
               ))}
             </ul>

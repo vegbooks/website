@@ -1,5 +1,6 @@
 import type { Props } from '@askrjs/askr';
 import type { ContentBlock, InlineContent } from '../content/types';
+import { sitePath } from '../site-base';
 
 export function ArticleContent({
   blocks,
@@ -40,7 +41,7 @@ function ContentBlockView({ block }: ContentBlockViewProps) {
     case 'image':
       const image = (
         <img
-          src={block.src}
+          src={sitePath(block.src)}
           alt={block.alt}
           width={block.width}
           height={block.height}
@@ -52,7 +53,7 @@ function ContentBlockView({ block }: ContentBlockViewProps) {
         >
           {block.href ? (
             <a
-              href={block.href}
+              href={sitePath(block.href)}
               target={block.external ? '_blank' : undefined}
               rel={block.external ? 'noopener noreferrer' : undefined}
             >
@@ -143,7 +144,7 @@ function InlineContentView({ content }: { content: readonly InlineContent[] }) {
             return (
               <a
                 key={index}
-                href={node.href}
+                href={sitePath(node.href)}
                 target={node.external ? '_blank' : undefined}
                 rel={node.external ? 'noopener noreferrer' : undefined}
               >

@@ -4,9 +4,9 @@ import { serializeRouteMeta } from '@askrjs/askr/router';
 import type { DocumentRenderArgs } from '@askrjs/askr/ssg';
 import { routeMeta } from './src/content/metadata';
 import { archiveLastModified } from './src/content/site-metadata';
-import { routeRegistry } from './src/pages/_routes';
+import { createVegbooksRouteRegistry } from './src/pages/_routes';
 
-export const registry = routeRegistry;
+export const registry = createVegbooksRouteRegistry();
 export const outputDir = 'dist';
 
 let clientTemplate: string | undefined;

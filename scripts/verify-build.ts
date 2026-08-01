@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 import { parse, type DefaultTreeAdapterMap } from 'parse5';
 import { archiveLastModified } from '../src/content/site-metadata.ts';
 import { generatedRouteCount } from '../src/generated/route-entries.ts';
+import { addSiteBase, siteBasePath, stripSiteBase } from '../src/site-base.ts';
 
 type Node = DefaultTreeAdapterMap['node'];
 type Element = DefaultTreeAdapterMap['element'];
@@ -106,7 +107,7 @@ for (const file of htmlFiles) {
       );
     }
     assert(
-      html.includes('href="/search/"') &&
+      html.includes(`href="${addSiteBase('/search/')}"`) &&
         html.includes('data-icon="SearchIcon"'),
       'primary navigation lacks the Askr Lucide search link'
     );
@@ -141,10 +142,17 @@ for (const file of htmlFiles) {
       /^(?:https?:|mailto:|tel:|data:)/i.test(raw)
     )
       continue;
-    const url = new URL(raw, `https://vegbooks.org${route}`);
+    if (siteBasePath && raw.startsWith('/')) {
+      assert(
+        raw === siteBasePath || raw.startsWith(`${siteBasePath}/`),
+        `${route} references unbased internal URL ${raw}`
+      );
+    }
+    const url = new URL(raw, `https://vegbooks.org${addSiteBase(route)}`);
     if (url.hostname !== 'vegbooks.org') continue;
+    const outputPath = stripSiteBase(url.pathname);
     assert(
-      resolveOutput(url.pathname),
+      resolveOutput(outputPath),
       `${route} references missing output ${url.pathname}`
     );
   }
