@@ -1,0 +1,50 @@
+{
+  "name": "@vegbooks/website",
+  "version": "0.1.0",
+  "private": true,
+  "description": "The static Vegbooks archive",
+  "type": "module",
+  "scripts": {
+    "dev": "vp dev",
+    "migrate": "node scripts/migrate.ts",
+    "verify:content": "node scripts/verify-content.ts",
+    "verify:build": "node scripts/verify-build.ts",
+    "build": "npm run build:client && npm run build:ssg && npm run verify:build",
+    "build:client": "vp build --outDir .askr/client",
+    "build:ssg": "askr ssg --config ./ssg.config.ts --output ./dist && cp ./dist/404/index.html ./dist/404.html",
+    "typecheck": "tsc --noEmit",
+    "test": "vp test run",
+    "lint": "vp lint src scripts ssg.config.ts vite.config.ts",
+    "fmt": "vp fmt .",
+    "fmt:check": "vp fmt . --check",
+    "analyze": "askr analyze --check",
+    "check": "npm run fmt:check && npm run lint && npm run typecheck && npm run test && npm run verify:content && npm run build && npm run analyze",
+    "preview": "vp preview --outDir dist"
+  },
+  "dependencies": {
+    "@askrjs/askr": "0.0.84",
+    "@askrjs/lucide": "^0.0.6",
+    "@askrjs/themes": "^0.0.19",
+    "@askrjs/ui": "^0.0.23"
+  },
+  "devDependencies": {
+    "@askrjs/cli": "0.0.17",
+    "@askrjs/vite": "0.0.10",
+    "@types/node": "^26.1.2",
+    "image-size": "^2.0.2",
+    "parse5": "^8.0.1",
+    "typescript": "^7.0.2",
+    "vite-plus": "^0.2.7",
+    "vitest": "^4.1.10"
+  },
+  "engines": {
+    "node": "^20.19.0 || >=22.12.0"
+  },
+  "askr": {
+    "analyze": {
+      "exclude": [
+        ".askr/**"
+      ]
+    }
+  }
+}

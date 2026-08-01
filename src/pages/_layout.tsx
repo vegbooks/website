@@ -1,0 +1,111 @@
+import { state, type Props } from '@askrjs/askr';
+import { SearchIcon } from '@askrjs/lucide/icons/search';
+import { currentRoute, Link } from '@askrjs/askr/router';
+
+export function SiteLayout({ children }: Props) {
+  const [menuOpen, setMenuOpen] = state(false);
+  const active = currentRoute().path;
+  const navItems = [
+    ['Home', '/'],
+    ['Favorites', '/favorites/'],
+    ['Books', '/books/'],
+    ['Movies, Etc.', '/media/'],
+    ['Contributors', '/contributors/'],
+    ['About', '/about/'],
+    ['Topics', '/topics/'],
+    ['Archive', '/archive/'],
+  ] as const;
+  const socialItems = [
+    ['Twitter', 'https://twitter.com/vegbooks', '/assets/social-twitter.png'],
+    [
+      'Facebook',
+      'https://facebook.com/vegbooks',
+      '/assets/social-facebook.png',
+    ],
+    [
+      'Pinterest',
+      'https://www.pinterest.com/jessicavegbooks/',
+      '/assets/social-pinterest.png',
+    ],
+  ] as const;
+  return (
+    <>
+      <a class="skip-link" href="#main-content">
+        Skip to content
+      </a>
+      <div class="site-shell">
+        <header class="site-header">
+          <Link class="wordmark" href="/" aria-label="Vegbooks home">
+            <img
+              src="/assets/vegbooks-id.png"
+              alt="Vegbooks"
+              width="2040"
+              height="1047"
+            />
+          </Link>
+          <button
+            class="menu-button"
+            type="button"
+            aria-expanded={menuOpen() ? 'true' : 'false'}
+            aria-controls="primary-navigation"
+            onClick={() => setMenuOpen((open) => !open)}
+          >
+            <span aria-hidden="true">☰</span> Menu
+          </button>
+          <nav
+            id="primary-navigation"
+            class={`site-nav${menuOpen() ? ' site-nav--open' : ''}`}
+            aria-label="Primary navigation"
+          >
+            {navItems.map(([label, href]) => (
+              <Link
+                key={href}
+                aria-current={isActive(active, href) ? 'page' : undefined}
+                href={href}
+                onClick={() => setMenuOpen(false)}
+              >
+                {label}
+              </Link>
+            ))}
+            <Link
+              class="site-nav__search"
+              aria-label="Search"
+              aria-current={isActive(active, '/search/') ? 'page' : undefined}
+              href="/search/"
+              title="Search"
+              onClick={() => setMenuOpen(false)}
+            >
+              <SearchIcon size={18} aria-hidden="true" />
+            </Link>
+            <span class="site-nav__social" aria-label="Vegbooks social sites">
+              {socialItems.map(([label, href, icon]) => (
+                <a
+                  key={href}
+                  class="social-link"
+                  href={href}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Vegbooks on ${label}`}
+                >
+                  <img src={icon} alt="" width="24" height="24" />
+                </a>
+              ))}
+            </span>
+          </nav>
+        </header>
+        <main id="main-content">{children}</main>
+        <footer class="site-footer">
+          <p>
+            Vegbooks is preserved as a read-only archive of reviews published
+            from 2009–2021.
+          </p>
+        </footer>
+      </div>
+    </>
+  );
+}
+
+function isActive(pathname: string, href: string): boolean {
+  if (href === '/') return pathname === '/';
+  return pathname === href || pathname.startsWith(href);
+}

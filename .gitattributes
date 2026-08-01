@@ -1,0 +1,13 @@
+* text=auto eol=lf
+
+# Binary site assets must never receive line-ending normalization.
+*.avif binary
+*.eps binary
+*.gif binary
+*.ico binary
+*.jpeg binary
+*.jpg binary
+*.png binary
+*.webp binary
+*.woff binary
+*.woff2 binary
