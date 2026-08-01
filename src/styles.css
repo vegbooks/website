@@ -343,6 +343,13 @@ p {
   font-size: 0.9em;
 }
 
+.article-content a,
+.editorial-page__body a {
+  text-decoration: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.14em;
+}
+
 .table-scroll {
   max-width: 100%;
   margin: 1rem 0;
