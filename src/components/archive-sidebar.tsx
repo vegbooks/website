@@ -3,10 +3,7 @@ import { sitePath } from '../site-base';
 
 export function ArchiveSidebar({ sidebar }: { sidebar: SidebarModel }) {
   return (
-    <div
-      class="archive-sidebar"
-      aria-label={sidebar.label ?? 'Archive navigation'}
-    >
+    <div class="archive-sidebar" aria-label={sidebar.label ?? 'Browse reviews'}>
       {sidebar.sections.map((section) => (
         <section key={section.title}>
           <h2>{section.title}</h2>

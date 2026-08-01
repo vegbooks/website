@@ -119,10 +119,10 @@ export function DirectoryRoutePage() {
 
 function ArchiveNotice() {
   return (
-    <aside class="archive-notice" aria-label="Archive status">
-      <strong>Vegbooks is a read-only archive.</strong> It is no longer
+    <aside class="archive-notice" aria-label="Publication status">
+      <strong>Vegbooks no longer publishes new content.</strong> It is not
       accepting review copies, submissions, or contributor applications. The
-      historical information below is preserved for context.
+      information below is retained for context.
     </aside>
   );
 }

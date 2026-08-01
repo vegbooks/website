@@ -396,7 +396,7 @@ for (let index = 0; index < articles.length; index += 1) {
 const editorialDescriptions: Record<string, string> = {
   about: 'The history and purpose of Vegbooks.',
   favorites: 'Favorite books and media selected by Vegbooks contributors.',
-  contributors: 'The writers who created the Vegbooks archive.',
+  contributors: 'The writers who contributed to Vegbooks.',
   publishers: 'Historical information for publishers and authors.',
 };
 const editorials: Editorial[] = [...editorialSources.values()]

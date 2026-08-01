@@ -8,21 +8,21 @@ const siteUrl = manifest.siteUrl;
 export function routeMeta(pathname: string): RouteMeta {
   const path = normalizePath(pathname);
   if (path === '/search/') {
-    return baseMeta('Search | Vegbooks', 'Search the Vegbooks archive.', path, {
+    return baseMeta('Search | Vegbooks', 'Search Vegbooks reviews.', path, {
       robots: 'noindex, follow',
     });
   }
   if (path === '/404/') {
     return baseMeta(
       'Page Not Found | Vegbooks',
-      'This address is not part of the Vegbooks archive.',
+      'This page could not be found on Vegbooks.',
       path,
       { robots: 'noindex, follow' }
     );
   }
   if (path === '/') {
     return collectionMeta(
-      'The Vegbooks Archive',
+      'Vegbooks Reviews',
       'Reviews of children’s books and media with animal and environmental themes.',
       path,
       1,
@@ -108,12 +108,15 @@ export function routeMeta(pathname: string): RouteMeta {
   }
 
   const directories: Record<string, [string, string]> = {
-    '/topics/': ['Topics', 'Browse all topics in the Vegbooks archive.'],
+    '/topics/': ['Topics', 'Browse all topics on Vegbooks.'],
     '/contributors/': [
       'Contributors',
       'The reviewers and historical contributors to Vegbooks.',
     ],
-    '/archive/': ['Archive', 'Browse Vegbooks reviews by publication year.'],
+    '/archive/': [
+      'Browse by Year',
+      'Browse Vegbooks reviews by publication year.',
+    ],
   };
   const directory = directories[path];
   if (directory) {
@@ -284,7 +287,7 @@ function breadcrumbs(items: readonly [string, string][]) {
 function unknownMeta(path: string): RouteMeta {
   return baseMeta(
     'Page Not Found | Vegbooks',
-    'This address is not part of the Vegbooks archive.',
+    'This page could not be found on Vegbooks.',
     path,
     { robots: 'noindex, follow' }
   );

@@ -14,7 +14,7 @@ export function SiteLayout({ children }: Props) {
     ['Contributors', '/contributors/'],
     ['About', '/about/'],
     ['Topics', '/topics/'],
-    ['Archive', '/archive/'],
+    ['Browse by Year', '/archive/'],
   ] as const;
   const socialItems = [
     ['Twitter', 'https://twitter.com/vegbooks', '/assets/social-twitter.png'],
@@ -100,10 +100,7 @@ export function SiteLayout({ children }: Props) {
         </header>
         <main id="main-content">{children}</main>
         <footer class="site-footer">
-          <p>
-            Vegbooks is preserved as a read-only archive of reviews published
-            from 2009–2021.
-          </p>
+          <p>Vegbooks reviews were published from 2009–2021.</p>
         </footer>
       </div>
     </>

@@ -56,7 +56,7 @@ export function SearchPage() {
       <section class="search-page" aria-labelledby="search-title">
         <header class="collection-header">
           <p class="kicker">1,008 Preserved Reviews</p>
-          <h1 id="search-title">Search the Archive</h1>
+          <h1 id="search-title">Search Reviews</h1>
           <p>Search titles, review text, categories, topics, and reviewers.</p>
         </header>
         <form

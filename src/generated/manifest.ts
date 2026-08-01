@@ -119689,7 +119689,7 @@ export const manifest = {
       "slug": "contributors",
       "legacyUrl": "https://vegbooks.org/index.php/contributors/",
       "canonicalUrl": "/contributors/",
-      "description": "The writers who created the Vegbooks archive.",
+      "description": "The writers who contributed to Vegbooks.",
       "content": [
         {
           "type": "paragraph",

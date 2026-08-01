@@ -63,7 +63,7 @@ export async function loadCollection(
   page = 1
 ): Promise<CollectionRouteData> {
   const manifest = await loadManifest();
-  let title = 'The Vegbooks Archive';
+  let title = 'Vegbooks Reviews';
   let description =
     'Reviews of children’s books and media with animal and environmental themes.';
   let baseUrl = '/';
@@ -184,12 +184,12 @@ export async function loadDirectory(
       description: 'Browse reviews by the people who wrote them.',
     },
     archive: {
-      title: 'Archive by Year',
+      title: 'Browse by Year',
       description: 'Browse the Vegbooks chronology from 2009 through 2021.',
     },
     media: {
       title: 'Movies, Etc.',
-      description: 'Browse every non-book media category in the archive.',
+      description: 'Browse every non-book media category on Vegbooks.',
     },
   }[kind];
   return { kind, ...content, manifest, sidebar: buildSidebar(manifest) };
@@ -225,7 +225,7 @@ function buildSidebar(manifest: ContentManifest): SidebarModel {
   return {
     sections: [
       {
-        title: 'Search the Archive',
+        title: 'Search Reviews',
         description: 'Find reviews by title, subject, reviewer, or keyword.',
         links: [{ label: 'Open Search', url: '/search/' }],
       },
@@ -245,7 +245,7 @@ function buildSidebar(manifest: ContentManifest): SidebarModel {
         ],
       },
       {
-        title: 'Archive by Year',
+        title: 'Browse by Year',
         links: manifest.years.map((year) => ({
           label: `${year.year} (${year.count})`,
           url: year.url,

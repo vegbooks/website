@@ -100,7 +100,7 @@ for (const file of htmlFiles) {
       'home page must have one primary navigation'
     );
     const primaryNavigationText = textContent(primaryNavigation[0]);
-    for (const label of ['Topics', 'Archive']) {
+    for (const label of ['Topics', 'Browse by Year']) {
       assert(
         primaryNavigationText.includes(label),
         `primary navigation lacks ${label}`
@@ -117,10 +117,10 @@ for (const file of htmlFiles) {
     );
     const pageText = textContent(document);
     for (const label of [
-      'The Vegbooks Archive',
-      'Search the Archive',
+      'Vegbooks Reviews',
+      'Search Reviews',
       'Browse Categories',
-      'Archive by Year',
+      'Browse by Year',
       'Recent Reviews',
     ]) {
       assert(
