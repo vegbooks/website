@@ -2,6 +2,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { renderToStringSync } from '@askrjs/askr/ssr';
 import { imageSize } from 'image-size';
 import { describe, expect, it } from 'vitest';
+import { loadArticle } from './content';
 import ApplesPost from '../posts/apples-cherries-red-raspberries';
 import BabyShowerPost from '../posts/baby-shower-gifts-for-veg-moms';
 import FriendsPost from '../posts/friends-true-stories-of-extraordinary-animal-friendships';
@@ -22,6 +23,20 @@ import VegetarianCookingPost from '../posts/vegetarian-cooking-for-beginners';
 import WildOrcaPost from '../posts/wild-orca-the-oldest-wisest-whale-in-the-world';
 
 describe('migrated WordPress content', () => {
+  it('keeps review loader data JSON-serializable for hydration', async () => {
+    const data = await loadArticle('the-zoo-box');
+    expect(JSON.parse(JSON.stringify(data))).toEqual(data);
+    expect(data).not.toHaveProperty('Post');
+    expect(data.article.previous).toEqual({
+      title: 'The Girl and the Bicycle',
+      url: '/reviews/the-girl-and-the-bicycle/',
+    });
+    expect(data.article.next).toEqual({
+      title: 'I Am So Brave!',
+      url: '/reviews/i-am-so-brave/',
+    });
+  });
+
   it('preserves early and late review bodies without copied WordPress HTML', () => {
     const early = renderToStringSync(PurpliciousPost);
     const late = renderToStringSync(OneSmallHopPost);

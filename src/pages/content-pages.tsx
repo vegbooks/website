@@ -25,19 +25,20 @@ export function CollectionRoutePage() {
   );
 }
 
-export function ArticleRoutePage() {
-  const data = routeData<{
-    article: PostMetadata;
-    Post: PostComponent;
-    sidebar: SidebarModel;
-  }>();
-  return (
-    <ArticleTemplate
-      article={data.article}
-      Post={data.Post}
-      sidebar={data.sidebar}
-    />
-  );
+export function createArticleRoutePage(Post: PostComponent) {
+  return function ArticleRoutePage() {
+    const data = routeData<{
+      article: PostMetadata;
+      sidebar: SidebarModel;
+    }>();
+    return (
+      <ArticleTemplate
+        article={data.article}
+        Post={Post}
+        sidebar={data.sidebar}
+      />
+    );
+  };
 }
 
 export function EditorialRoutePage() {

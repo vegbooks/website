@@ -9,7 +9,11 @@ async function main() {
   }
 
   if (root.childNodes.length > 0) {
-    await hydrateSPA({ root, registry: routeRegistry });
+    await hydrateSPA({
+      root,
+      registry: routeRegistry,
+      hydrate: { verifyMarkup: true },
+    });
     return;
   }
 

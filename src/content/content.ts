@@ -4,7 +4,6 @@ import type {
   ContentManifest,
   EditorialPage,
   Pagination,
-  PostComponent,
   PostMetadata,
   SidebarModel,
 } from './types';
@@ -38,17 +37,24 @@ export function loadManifest(): Promise<ContentManifest> {
 
 export async function loadArticle(slug: string): Promise<{
   article: PostMetadata;
-  Post: PostComponent;
   sidebar: SidebarModel;
 }> {
-  const [{ articleImports }, manifest] = await Promise.all([
-    import('../generated/article-imports'),
-    loadManifest(),
-  ]);
-  const load = articleImports[slug];
-  if (!load) throw new Error(`Unknown review: ${slug}`);
-  const { article, default: Post } = await load();
-  return { article, Post, sidebar: buildSidebar(manifest) };
+  const manifest = await loadManifest();
+  const index = manifest.articles.findIndex(
+    (candidate) => candidate.slug === slug
+  );
+  const summary = manifest.articles[index];
+  if (!summary) throw new Error(`Unknown review: ${slug}`);
+  const previous = manifest.articles[index + 1];
+  const next = manifest.articles[index - 1];
+  const article: PostMetadata = {
+    ...summary,
+    ...(previous && {
+      previous: { title: previous.title, url: previous.url },
+    }),
+    ...(next && { next: { title: next.title, url: next.url } }),
+  };
+  return { article, sidebar: buildSidebar(manifest) };
 }
 
 export async function loadCollection(

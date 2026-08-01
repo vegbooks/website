@@ -2,9 +2,11 @@ import {
   createRouteRegistry,
   fallback,
   group,
+  lazy,
   route,
   type RouteMeta,
 } from '@askrjs/askr/router';
+import { articleImports } from '../generated/article-imports';
 import {
   categoryEntries,
   categoryPageEntries,
@@ -27,8 +29,8 @@ import {
 } from '../content/content';
 import { SiteLayout } from './_layout';
 import {
-  ArticleRoutePage,
   CollectionRoutePage,
+  createArticleRoutePage,
   DirectoryRoutePage,
   EditorialRoutePage,
 } from './content-pages';
@@ -59,11 +61,19 @@ export const routeRegistry = createRouteRegistry(() => {
         loadCollection('reviews', '', Number(params.page)),
       meta: metadata,
     });
-    route('/reviews/{slug}', ArticleRoutePage, {
-      entries: () => [...reviewEntries],
-      loader: ({ params }) => loadArticle(params.slug),
-      meta: metadata,
-    });
+    for (const { slug } of reviewEntries) {
+      route(
+        `/reviews/${slug}`,
+        lazy(async () => {
+          const { default: Post } = await articleImports[slug]();
+          return createArticleRoutePage(Post);
+        }),
+        {
+          loader: () => loadArticle(slug),
+          meta: metadata,
+        }
+      );
+    }
     route('/media', CollectionRoutePage, {
       loader: () => loadMediaCollection(),
       meta: metadata,
