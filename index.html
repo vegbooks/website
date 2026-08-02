@@ -8,18 +8,18 @@
     <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <title data-askr-head>Vegbooks</title>
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-4L3BH55NV0"
+    ></script>
     <script>
-      window.GoogleAnalyticsObject = 'ga';
-      window.ga =
-        window.ga ||
-        function () {
-          (window.ga.q = window.ga.q || []).push(arguments);
-        };
-      window.ga.l = Number(new Date());
-      window.ga('create', 'UA-12465398-1', 'vegbooks.org');
-      window.ga('send', 'pageview');
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag('js', new Date());
+      gtag('config', 'G-4L3BH55NV0');
     </script>
-    <script async src="https://www.google-analytics.com/analytics.js"></script>
   </head>
   <body>
     <div id="app"></div>

@@ -18,6 +18,8 @@ const maxWidth = 960;
 const concurrency = 8;
 const postRoot = join(root, 'src', 'posts');
 const manifestPath = join(root, 'src', 'generated', 'delivery-images.ts');
+const wordmarkSource = '/assets/vegbooks-id.png';
+const wordmarkVariant = 'assets/vegbooks-wordmark-640';
 const nameOverrides: Readonly<Record<string, string>> = {
   '/media/2009/10/4ee4ca87d535cf5b2d000020.jpg': 'raising-veg-kids-good-books',
   '/media/2009/10/gv-vb.jpg': 'generation-veggie-top-10-books',
@@ -113,6 +115,22 @@ const workers = Array.from({ length: concurrency }, async () => {
         .webp({ quality: asset ? 88 : 82, effort: 4 })
         .toFile(webp),
     ]);
+    if (sourcePath === wordmarkSource) {
+      const wordmark = sharp(source).rotate().resize({
+        width: 640,
+        withoutEnlargement: true,
+      });
+      await Promise.all([
+        wordmark
+          .clone()
+          .avif({ quality: 75, effort: 4 })
+          .toFile(join(stagingRoot, `${wordmarkVariant}.avif`)),
+        wordmark
+          .clone()
+          .webp({ quality: 88, effort: 4 })
+          .toFile(join(stagingRoot, `${wordmarkVariant}.webp`)),
+      ]);
+    }
 
     completed++;
     if (completed % 50 === 0 || completed === sources.length) {
@@ -131,6 +149,12 @@ for (const source of sources) {
     const destination = join(publicRoot, `${relativeBase}.${format}`);
     await rename(staged, destination);
   }
+}
+for (const format of ['avif', 'webp']) {
+  await rename(
+    join(stagingRoot, `${wordmarkVariant}.${format}`),
+    join(publicRoot, `${wordmarkVariant}.${format}`)
+  );
 }
 for (const source of sources) await rm(source);
 await rm(stagingRoot, { recursive: true, force: true });

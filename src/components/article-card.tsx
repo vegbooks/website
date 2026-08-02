@@ -7,9 +7,10 @@ import { OptimizedImage } from './optimized-image';
 
 interface ArticleCardProps extends Props {
   article: ArticleSummary;
+  priority?: boolean;
 }
 
-export function ArticleCard({ article }: ArticleCardProps) {
+export function ArticleCard({ article, priority = false }: ArticleCardProps) {
   return (
     <article class="article-card">
       <h2>
@@ -28,8 +29,9 @@ export function ArticleCard({ article }: ArticleCardProps) {
             width={article.image.width}
             height={article.image.height}
             sizes="(min-width: 48rem) 16rem, 100vw"
-            loading="lazy"
+            loading={priority ? 'eager' : 'lazy'}
             decoding="async"
+            fetchpriority={priority ? 'high' : undefined}
           />
         </a>
       )}

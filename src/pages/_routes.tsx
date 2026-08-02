@@ -27,6 +27,7 @@ import {
   loadEditorial,
   loadMediaCollection,
 } from '../content/content';
+import { clientRouteMeta } from '../content/client-metadata';
 import { SiteLayout } from './_layout';
 import {
   CollectionRoutePage,
@@ -47,14 +48,8 @@ export function createVegbooksRouteRegistry(basePath = '') {
   const base = normalizeSiteBasePath(basePath);
   const at = <Path extends string>(path: Path): Path =>
     addSiteBase(path, base) as Path;
-  const metadata = async ({
-    pathname,
-  }: {
-    pathname: string;
-  }): Promise<RouteMeta> =>
-    (await import('../content/metadata')).routeMeta(
-      stripSiteBase(pathname, base)
-    );
+  const metadata = ({ pathname }: { pathname: string }): Promise<RouteMeta> =>
+    clientRouteMeta(stripSiteBase(pathname, base));
 
   return createRouteRegistry(() => {
     group({ layout: SiteLayout }, () => {

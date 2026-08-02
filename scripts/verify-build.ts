@@ -75,9 +75,30 @@ for (const file of htmlFiles) {
   }
   if (route === '/') {
     assert(
-      html.includes('UA-12465398-1') &&
-        html.includes('https://www.google-analytics.com/analytics.js'),
-      'home document does not preserve Google Analytics'
+      html.includes('G-4L3BH55NV0') &&
+        html.includes('https://www.googletagmanager.com/gtag/js'),
+      'home document does not include Google Analytics 4'
+    );
+    assert(
+      !/rel="modulepreload"[^>]+manifest-[^"/]+\.js/.test(html),
+      'home document eagerly preloads the full content manifest'
+    );
+    const articleImages = findAll(
+      document,
+      (element) =>
+        element.tagName === 'a' &&
+        attr(element, 'class') === 'article-card__image'
+    ).flatMap((link) => findAll(link, (element) => element.tagName === 'img'));
+    assert(
+      attr(articleImages[0], 'loading') === 'eager' &&
+        attr(articleImages[0], 'fetchpriority') === 'high',
+      'home LCP image is not eagerly loaded at high priority'
+    );
+    assert(
+      articleImages
+        .slice(1)
+        .every((image) => attr(image, 'loading') === 'lazy'),
+      'below-the-fold home images must remain lazy loaded'
     );
     const socialLinks = new Set(
       findAll(document, (element) => element.tagName === 'a')

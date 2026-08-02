@@ -42,16 +42,19 @@ export function SiteLayout({ children }: Props) {
             href={sitePath('/')}
             aria-label="Vegbooks home"
           >
-            <OptimizedImage
-              src="/assets/vegbooks-id.png"
-              alt="Vegbooks"
-              width="2040"
-              height="1047"
-              sizes="(min-width: 48rem) 18rem, 12rem"
-              fetchpriority="high"
-              loading="eager"
-              decoding="async"
-            />
+            <picture>
+              <source
+                type="image/avif"
+                srcset={sitePath('/assets/vegbooks-wordmark-640.avif')}
+              />
+              <img
+                {...{ loading: 'eager', decoding: 'async' }}
+                src={sitePath('/assets/vegbooks-wordmark-640.webp')}
+                alt="Vegbooks"
+                width="640"
+                height="328"
+              />
+            </picture>
           </Link>
           <button
             class="menu-button"

@@ -19,8 +19,12 @@ export function CollectionTemplate({
           {collection.description && <p>{collection.description}</p>}
         </header>
         <div class="article-list">
-          {collection.articles.map((article) => (
-            <ArticleCard key={article.id} article={article} />
+          {collection.articles.map((article, index) => (
+            <ArticleCard
+              key={article.id}
+              article={article}
+              priority={index === 0}
+            />
           ))}
         </div>
         {collection.pagination && (
