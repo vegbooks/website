@@ -1,6 +1,7 @@
 import { readFileSync, readdirSync } from 'node:fs';
 import { renderToStringSync } from '@askrjs/askr/ssr';
 import { imageSize } from 'image-size';
+import { deliveryImagePath } from '../image-paths.ts';
 import { describe, expect, it } from 'vitest';
 import { loadArticle } from './content';
 import ApplesPost from '../posts/apples-cherries-red-raspberries';
@@ -75,10 +76,10 @@ describe('migrated WordPress content', () => {
   });
 
   it('uses the highest-resolution source when media names collide', () => {
+    const image = deliveryImagePath('/media/2009/12/cover.jpg', 'webp');
+    expect(image).toBeDefined();
     const dimensions = imageSize(
-      readFileSync(
-        new URL('../../public/media/2009/12/cover.jpg', import.meta.url)
-      )
+      readFileSync(new URL(`../../public${image}`, import.meta.url))
     );
     expect(dimensions).toMatchObject({ width: 450, height: 306 });
   });

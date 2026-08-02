@@ -1,5 +1,6 @@
 import type { Props } from '@askrjs/askr';
 import type { ContentBlock, InlineContent } from '../content/types';
+import { deliveryImagePath } from '../image-paths.ts';
 import { sitePath } from '../site-base';
 import { OptimizedImage } from './optimized-image';
 
@@ -57,7 +58,7 @@ function ContentBlockView({ block }: ContentBlockViewProps) {
         >
           {block.href ? (
             <a
-              href={sitePath(block.href)}
+              href={deliverySitePath(block.href)}
               target={block.external ? '_blank' : undefined}
               rel={block.external ? 'noopener noreferrer' : undefined}
             >
@@ -148,7 +149,7 @@ function InlineContentView({ content }: { content: readonly InlineContent[] }) {
             return (
               <a
                 key={index}
-                href={sitePath(node.href)}
+                href={deliverySitePath(node.href)}
                 target={node.external ? '_blank' : undefined}
                 rel={node.external ? 'noopener noreferrer' : undefined}
               >
@@ -159,4 +160,8 @@ function InlineContentView({ content }: { content: readonly InlineContent[] }) {
       })}
     </>
   );
+}
+
+function deliverySitePath(path: string): string {
+  return sitePath(deliveryImagePath(path, 'webp') ?? path);
 }

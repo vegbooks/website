@@ -1,7 +1,6 @@
 import type { ImageProps } from '@askrjs/vite/image';
-import { Image } from '@askrjs/vite/image';
 import type { JSXElement } from '@askrjs/askr/jsx-runtime';
-import { imageAssets } from '../generated/image-assets';
+import { deliveryImagePath } from '../image-paths.ts';
 import { sitePath } from '../site-base';
 
 interface OptimizedImageProps extends Omit<ImageProps, 'image'> {
@@ -10,16 +9,13 @@ interface OptimizedImageProps extends Omit<ImageProps, 'image'> {
 }
 
 export function OptimizedImage({ src, alt, ...props }: OptimizedImageProps) {
-  const declaration = imageAssets[src];
-  return declaration ? (
-    <Image
-      image={declaration}
-      alt={alt}
-      loading="lazy"
-      decoding="async"
-      sizes="(min-width: 64rem) 48rem, 100vw"
-      {...props}
-    />
+  const avif = deliveryImagePath(src, 'avif');
+  const webp = deliveryImagePath(src, 'webp');
+  return avif && webp ? (
+    <picture>
+      <source type="image/avif" srcset={sitePath(avif)} />
+      <img {...props} src={sitePath(webp)} alt={alt} />
+    </picture>
   ) : (
     <img src={sitePath(src)} alt={alt} {...props} />
   );

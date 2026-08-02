@@ -1,4 +1,5 @@
 import type { JSXElement } from '@askrjs/askr/jsx-runtime';
+import { deliveryImagePath } from './image-paths.ts';
 
 export function normalizeSiteBasePath(value: string | undefined): string {
   if (!value || value === '/') return '';
@@ -70,7 +71,10 @@ function prefixRenderableSiteUrls(value: unknown, basePath: string): void {
     for (const attribute of ['action', 'href', 'poster', 'src', 'srcSet']) {
       const current = value.props[attribute];
       if (typeof current === 'string')
-        value.props[attribute] = addSiteBase(current, basePath);
+        value.props[attribute] = addSiteBase(
+          deliveryImagePath(current, 'webp') ?? current,
+          basePath
+        );
     }
   }
   prefixRenderableSiteUrls(value.props.children, basePath);

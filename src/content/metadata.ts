@@ -2,6 +2,7 @@ import type { RouteMeta } from '@askrjs/askr/router';
 import { manifest } from '../generated/manifest';
 import { pageUrl } from './content';
 import { archiveLastModified } from './site-metadata';
+import { deliveryImagePath } from '../image-paths.ts';
 
 const siteUrl = manifest.siteUrl;
 
@@ -46,7 +47,13 @@ export function routeMeta(pathname: string): RouteMeta {
         type: 'article',
         url: canonical,
         site_name: 'Vegbooks',
-        ...(article.seo.image ? { image: article.seo.image } : {}),
+        ...(article.seo.image
+          ? {
+              image:
+                deliveryImagePath(article.seo.image, 'webp') ??
+                article.seo.image,
+            }
+          : {}),
       },
       jsonLd: [
         {
@@ -67,7 +74,13 @@ export function routeMeta(pathname: string): RouteMeta {
             url: siteUrl,
           },
           mainEntityOfPage: canonical,
-          ...(article.seo.image ? { image: article.seo.image } : {}),
+          ...(article.seo.image
+            ? {
+                image:
+                  deliveryImagePath(article.seo.image, 'webp') ??
+                  article.seo.image,
+              }
+            : {}),
         },
         breadcrumbs([
           ['Home', '/'],
@@ -266,7 +279,7 @@ function baseMeta(
       type: 'website',
       url: canonical,
       site_name: 'Vegbooks',
-      image: absolute('/assets/vegbooks-id.png'),
+      image: absolute('/assets/vegbooks-id.webp'),
     },
   };
 }

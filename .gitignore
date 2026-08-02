@@ -3,5 +3,4 @@ node_modules/
 dist/
 .dist*/
 ..dist*/
-src/generated/image-assets.ts
 .DS_Store

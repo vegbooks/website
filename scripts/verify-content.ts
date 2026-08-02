@@ -2,7 +2,9 @@ import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { dirname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { articleImports } from '../src/generated/article-imports.ts';
+import { deliveryImages } from '../src/generated/delivery-images.ts';
 import { manifest } from '../src/generated/manifest.ts';
+import { deliveryImagePath } from '../src/image-paths.ts';
 import {
   categoryEntries,
   categoryPageEntries,
@@ -79,7 +81,12 @@ assert(
 const mediaRoot = join(root, 'public', 'media');
 const mediaFiles = walkFiles(mediaRoot);
 assert(
-  mediaFiles.length === provenance.counts.mediaFiles,
+  Object.keys(deliveryImages).filter((path) => path.startsWith('/media/'))
+    .length === provenance.counts.mediaFiles,
+  'delivery image manifest differs from provenance'
+);
+assert(
+  mediaFiles.length === provenance.counts.mediaFiles * 2,
   'generated media count differs from provenance'
 );
 for (const file of mediaFiles) {
@@ -91,6 +98,10 @@ for (const file of mediaFiles) {
   assert(
     !/-\d+x\d+(?=\.[a-z0-9]+$)/.test(path),
     `WordPress thumbnail variant leaked into media path: ${path}`
+  );
+  assert(
+    /\.(?:avif|webp)$/.test(path),
+    `unsupported delivery image format: ${path}`
   );
 }
 for (const file of walkFiles(join(root, 'public', 'assets'))) {
@@ -228,7 +239,7 @@ assert(
 );
 
 console.log(
-  `Verified ${manifest.articles.length} reviews, ${manifest.topics.length} topics, ${generatedRouteCount} routes, ${provenance.counts.mediaFiles} media files, and ${redirects.length} redirects.`
+  `Verified ${manifest.articles.length} reviews, ${manifest.topics.length} topics, ${generatedRouteCount} routes, ${provenance.counts.mediaFiles} source images as ${mediaFiles.length} delivery files, and ${redirects.length} redirects.`
 );
 
 function verifyBlocks(
@@ -292,6 +303,19 @@ function verifyLink(
 
 function verifyAsset(path: string, sourceUrl: string): void {
   if (!path.startsWith('/')) return;
+  const avif = deliveryImagePath(path, 'avif');
+  const webp = deliveryImagePath(path, 'webp');
+  if (avif && webp) {
+    assert(
+      existsSync(join(root, 'public', avif.replace(/^\//, ''))),
+      `missing AVIF ${avif} referenced by ${sourceUrl}`
+    );
+    assert(
+      existsSync(join(root, 'public', webp.replace(/^\//, ''))),
+      `missing WebP ${webp} referenced by ${sourceUrl}`
+    );
+    return;
+  }
   assert(
     existsSync(join(root, 'public', path.replace(/^\//, ''))),
     `missing asset ${path} referenced by ${sourceUrl}`
