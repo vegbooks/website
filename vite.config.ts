@@ -2,7 +2,7 @@ import type { PluginOption, UserConfig } from 'vite-plus';
 import { askr } from '@askrjs/vite';
 
 function askrPlugin(): PluginOption {
-  return askr() as unknown as PluginOption;
+  return askr({ images: true }) as unknown as PluginOption;
 }
 
 export default function config(): UserConfig {

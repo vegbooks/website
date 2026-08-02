@@ -3,6 +3,7 @@ import type { ArticleSummary } from '../content/types';
 import { ArticleMeta } from './article-meta';
 import { TaxonomyLinks } from './taxonomy-links';
 import { sitePath } from '../site-base';
+import { OptimizedImage } from './optimized-image';
 
 interface ArticleCardProps extends Props {
   article: ArticleSummary;
@@ -21,11 +22,14 @@ export function ArticleCard({ article }: ArticleCardProps) {
           href={sitePath(article.url)}
           tabIndex={-1}
         >
-          <img
-            src={sitePath(article.image.src)}
+          <OptimizedImage
+            src={article.image.src}
             alt={article.image.alt}
             width={article.image.width}
             height={article.image.height}
+            sizes="(min-width: 48rem) 16rem, 100vw"
+            loading="lazy"
+            decoding="async"
           />
         </a>
       )}

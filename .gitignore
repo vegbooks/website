@@ -1,4 +1,7 @@
 node_modules/
 .askr/
 dist/
+.dist*/
+..dist*/
+src/generated/image-assets.ts
 .DS_Store

@@ -18,6 +18,7 @@ import {
   EditorialPageTemplate,
 } from '../templates';
 import { prefixElementSiteUrls, sitePath } from '../site-base';
+import { optimizeElementImages } from '../components/optimized-image';
 
 export function CollectionRoutePage() {
   const data = routeData<CollectionRouteData>();
@@ -27,7 +28,7 @@ export function CollectionRoutePage() {
 }
 
 export function createArticleRoutePage(Post: PostComponent) {
-  const SitePost = () => prefixElementSiteUrls(Post());
+  const SitePost = () => prefixElementSiteUrls(optimizeElementImages(Post()));
   return function ArticleRoutePage() {
     const data = routeData<{
       article: PostMetadata;

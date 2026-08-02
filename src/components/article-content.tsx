@@ -1,6 +1,7 @@
 import type { Props } from '@askrjs/askr';
 import type { ContentBlock, InlineContent } from '../content/types';
 import { sitePath } from '../site-base';
+import { OptimizedImage } from './optimized-image';
 
 export function ArticleContent({
   blocks,
@@ -40,11 +41,14 @@ function ContentBlockView({ block }: ContentBlockViewProps) {
       );
     case 'image':
       const image = (
-        <img
-          src={sitePath(block.src)}
+        <OptimizedImage
+          src={block.src}
           alt={block.alt}
           width={block.width}
           height={block.height}
+          sizes="(min-width: 64rem) 48rem, 100vw"
+          loading="lazy"
+          decoding="async"
         />
       );
       return (

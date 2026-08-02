@@ -2,6 +2,7 @@ import { state, type Props } from '@askrjs/askr';
 import { SearchIcon } from '@askrjs/lucide/icons/search';
 import { currentRoute, Link } from '@askrjs/askr/router';
 import { sitePath, stripSiteBase } from '../site-base';
+import { OptimizedImage } from '../components/optimized-image';
 
 export function SiteLayout({ children }: Props) {
   const [menuOpen, setMenuOpen] = state(false);
@@ -41,11 +42,15 @@ export function SiteLayout({ children }: Props) {
             href={sitePath('/')}
             aria-label="Vegbooks home"
           >
-            <img
-              src={sitePath('/assets/vegbooks-id.png')}
+            <OptimizedImage
+              src="/assets/vegbooks-id.png"
               alt="Vegbooks"
               width="2040"
               height="1047"
+              sizes="(min-width: 48rem) 18rem, 12rem"
+              fetchpriority="high"
+              loading="eager"
+              decoding="async"
             />
           </Link>
           <button
@@ -92,7 +97,7 @@ export function SiteLayout({ children }: Props) {
                   rel="noopener noreferrer"
                   aria-label={`Vegbooks on ${label}`}
                 >
-                  <img src={sitePath(icon)} alt="" width="24" height="24" />
+                  <OptimizedImage src={icon} alt="" width="24" height="24" />
                 </a>
               ))}
             </span>
