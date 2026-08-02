@@ -17,7 +17,7 @@ concurrency:
 jobs:
   ci:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
     steps:
       - name: Checkout
         uses: actions/checkout@v7
@@ -31,6 +31,17 @@ jobs:
 
       - name: Install dependencies
         run: npm ci
+
+      - name: Restore responsive image cache
+        uses: actions/cache@v5
+        with:
+          path: node_modules/.cache/@askrjs/vite/images
+          key: ${{ runner.os }}-askr-images-${{ hashFiles('package-lock.json', 'vite.config.ts', 'scripts/generate-image-assets.ts', 'public/**/*.jpg', 'public/**/*.jpeg', 'public/**/*.png') }}
+
+      - name: Configure GitHub Pages
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        id: pages
+        uses: actions/configure-pages@v6
 
       - name: Format
         run: npm run fmt:check
@@ -46,6 +57,32 @@ jobs:
 
       - name: Build
         run: npm run build
+        env:
+          SITE_BASE_PATH: ${{ steps.pages.outputs.base_path }}
 
       - name: Analyze
         run: npm run analyze
+
+      - name: Upload Pages artifact
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v5
+        with:
+          path: ./dist
+
+  deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: ci
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5
