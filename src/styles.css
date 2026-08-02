@@ -8,6 +8,7 @@
   --orange: #a64b00;
   --muted: #666;
   --rule: #9aac92;
+  --interactive-target: 2.5rem;
 }
 
 * {
@@ -72,7 +73,7 @@ select {
   top: 0.5rem;
   left: 0.5rem;
   display: inline-flex;
-  min-height: 2.75rem;
+  min-height: var(--interactive-target);
   align-items: center;
   padding: 0.65rem 0.85rem;
   transform: translateY(-150%);
@@ -600,40 +601,48 @@ td {
   font-family: Arial, Helvetica, sans-serif;
 }
 
-@media (max-width: 48rem) {
-  .site-nav a,
-  .post-meta a,
-  .taxonomy-links a,
-  .article-card h2 a,
-  .article-card p > a,
-  .article-card > a,
-  .archive-sidebar a,
-  .pagination a,
-  .article-neighbors a,
-  .term-directory a,
-  .year-directory a,
-  .search-results h2 a,
-  .not-found a {
-    display: inline-flex;
-    min-width: 2.75rem;
-    min-height: 2.75rem;
-    align-items: center;
-  }
+.site-nav a,
+.post-meta a,
+.taxonomy-links a,
+.article-card h2 a,
+.article-card p > a,
+.article-card > a,
+.archive-sidebar a,
+.pagination a,
+.article-neighbors a,
+.term-directory a,
+.year-directory a,
+.search-results h2 a,
+.not-found a {
+  display: inline-flex;
+  min-width: var(--interactive-target);
+  min-height: var(--interactive-target);
+  align-items: center;
+}
 
-  .pagination button,
-  .search-field input {
-    min-height: 2.75rem;
+.pagination button,
+.search-field input {
+  min-height: var(--interactive-target);
+}
+
+.pagination button {
+  min-width: var(--interactive-target);
+  padding: 0.5rem;
+}
+
+@media (max-width: 48rem) {
+  :root {
+    --interactive-target: 3rem;
   }
 
   .pagination button {
-    min-width: 2.75rem;
     padding: 0.625rem;
   }
 
   .menu-button {
     display: block;
     width: 100%;
-    min-height: 2.75rem;
+    min-height: var(--interactive-target);
     margin-top: 0.65rem;
     padding: 0.65rem;
     color: var(--green);
