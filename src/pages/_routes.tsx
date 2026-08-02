@@ -6,7 +6,6 @@ import {
   route,
   type RouteMeta,
 } from '@askrjs/askr/router';
-import { articleImports } from '../generated/article-imports';
 import {
   categoryEntries,
   categoryPageEntries,
@@ -31,13 +30,11 @@ import { clientRouteMeta } from '../content/client-metadata';
 import { SiteLayout } from './_layout';
 import {
   CollectionRoutePage,
-  createArticleRoutePage,
   DirectoryRoutePage,
   EditorialRoutePage,
 } from './content-pages';
 import { HomePage } from './index';
 import { NotFoundPage } from './not-found';
-import { SearchPage } from './search';
 import {
   addSiteBase,
   normalizeSiteBasePath,
@@ -71,8 +68,9 @@ export function createVegbooksRouteRegistry(basePath = '') {
         route(
           at(`/reviews/${slug}`),
           lazy(async () => {
-            const { default: Post } = await articleImports[slug]();
-            return createArticleRoutePage(Post);
+            const { loadArticleRoutePage } =
+              await import('../content/article-loader');
+            return loadArticleRoutePage(slug);
           }),
           {
             loader: () => loadArticle(slug),
@@ -146,7 +144,11 @@ export function createVegbooksRouteRegistry(basePath = '') {
         loader: () => loadEditorial('publishers'),
         meta: metadata,
       });
-      route(at('/search'), SearchPage, { meta: metadata });
+      route(
+        at('/search'),
+        lazy(async () => (await import('./search')).SearchPage),
+        { meta: metadata }
+      );
       route(at('/404'), NotFoundPage, { meta: metadata });
       route(at('/{category}'), CollectionRoutePage, {
         entries: () => [...categoryEntries],

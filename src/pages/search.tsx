@@ -2,7 +2,6 @@ import { state } from '@askrjs/askr';
 import { SearchIcon } from '@askrjs/lucide/icons/search';
 import { resource } from '@askrjs/askr/resources';
 import { currentRoute, updateRouteQuery } from '@askrjs/askr/router';
-import { Input, Label } from '@askrjs/themes/components';
 import { ContentLayout } from '../components/content-layout';
 import { SearchEngine } from '../search';
 import type { SearchIndex } from '../search/types';
@@ -67,7 +66,7 @@ export function SearchPage() {
             syncUrl();
           }}
         >
-          <Label class="search-form__query">
+          <label class="search-form__query">
             <span>Search Reviews</span>
             <span class="search-field">
               <SearchIcon
@@ -75,7 +74,7 @@ export function SearchPage() {
                 size={18}
                 aria-hidden="true"
               />
-              <Input
+              <input
                 type="search"
                 value={query()}
                 placeholder="Title, reviewer, subject, or keyword"
@@ -86,7 +85,7 @@ export function SearchPage() {
                 autocomplete="off"
               />
             </span>
-          </Label>
+          </label>
         </form>
         {search.error ? (
           <p role="alert">Search is unavailable: {search.error.message}</p>

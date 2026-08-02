@@ -1,4 +1,4 @@
-import { existsSync, readFileSync, readdirSync } from 'node:fs';
+import { existsSync, readFileSync, readdirSync, statSync } from 'node:fs';
 import { dirname, extname, join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { parse, type DefaultTreeAdapterMap } from 'parse5';
@@ -82,6 +82,25 @@ for (const file of htmlFiles) {
     assert(
       !/rel="modulepreload"[^>]+manifest-[^"/]+\.js/.test(html),
       'home document eagerly preloads the full content manifest'
+    );
+    assert(
+      !/rel="modulepreload"[^>]+article-loader-[^"/]+\.js/.test(html),
+      'home document eagerly preloads the article import registry'
+    );
+    const stylesheets = findAll(
+      document,
+      (element) =>
+        element.tagName === 'link' && attr(element, 'rel') === 'stylesheet'
+    );
+    assert(stylesheets.length === 1, 'home must have one stylesheet');
+    const stylesheetPath = new URL(
+      attr(stylesheets[0], 'href') ?? '',
+      'https://vegbooks.org/'
+    ).pathname;
+    const stylesheet = join(dist, stripSiteBase(stylesheetPath).slice(1));
+    assert(
+      statSync(stylesheet).size < 20_000,
+      'home stylesheet exceeds the 20 KB performance budget'
     );
     const articleImages = findAll(
       document,
