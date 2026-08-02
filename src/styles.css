@@ -5,7 +5,7 @@
   font-synthesis: none;
   line-height: 1.45;
   --green: #235410;
-  --orange: #e98711;
+  --orange: #a64b00;
   --muted: #666;
   --rule: #9aac92;
 }
@@ -23,7 +23,6 @@ html {
 body {
   margin: 0;
   padding: 0 1rem;
-  overflow-x: hidden;
   background: #fff;
   color: #333;
   font-family: Arial, Helvetica, sans-serif;
@@ -36,6 +35,15 @@ a {
 
 a:hover {
   text-decoration: underline;
+}
+
+p a,
+li a,
+address a,
+td a {
+  text-decoration: underline;
+  text-decoration-thickness: 0.08em;
+  text-underline-offset: 0.14em;
 }
 
 a:focus-visible,
@@ -63,6 +71,9 @@ select {
   z-index: 100;
   top: 0.5rem;
   left: 0.5rem;
+  display: inline-flex;
+  min-height: 2.75rem;
+  align-items: center;
   padding: 0.65rem 0.85rem;
   transform: translateY(-150%);
   background: #fff;
@@ -157,6 +168,7 @@ select {
 
 .content-layout__main {
   min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 .content-layout__aside {
@@ -499,7 +511,7 @@ td {
   --ak-color-primary-ink: #fff;
   --ak-color-input: #829679;
   --ak-color-ring: var(--orange);
-  --ak-color-focus-ring: rgb(233 135 17 / 14%);
+  --ak-color-focus-ring: rgb(166 75 0 / 18%);
   --ak-density-control-height-sm: 2.25rem;
   --ak-density-control-height-md: 2.25rem;
   --ak-density-control-padding-x-sm: 0.55rem;
@@ -589,9 +601,39 @@ td {
 }
 
 @media (max-width: 48rem) {
+  .site-nav a,
+  .post-meta a,
+  .taxonomy-links a,
+  .article-card h2 a,
+  .article-card p > a,
+  .article-card > a,
+  .archive-sidebar a,
+  .pagination a,
+  .article-neighbors a,
+  .term-directory a,
+  .year-directory a,
+  .search-results h2 a,
+  .not-found a {
+    display: inline-flex;
+    min-width: 2.75rem;
+    min-height: 2.75rem;
+    align-items: center;
+  }
+
+  .pagination button,
+  .search-field input {
+    min-height: 2.75rem;
+  }
+
+  .pagination button {
+    min-width: 2.75rem;
+    padding: 0.625rem;
+  }
+
   .menu-button {
     display: block;
     width: 100%;
+    min-height: 2.75rem;
     margin-top: 0.65rem;
     padding: 0.65rem;
     color: var(--green);
@@ -613,7 +655,12 @@ td {
   }
 
   .site-nav a {
+    justify-content: center;
     text-align: center;
+  }
+
+  .site-nav .social-link {
+    padding: 0.625rem;
   }
 
   .site-nav__social {
