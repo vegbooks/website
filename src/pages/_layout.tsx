@@ -48,7 +48,11 @@ export function SiteLayout({ children }: Props) {
                 srcset={sitePath('/assets/vegbooks-wordmark-640.avif')}
               />
               <img
-                {...{ loading: 'eager', decoding: 'async' }}
+                {...{
+                  loading: 'eager',
+                  decoding: 'async',
+                  fetchpriority: 'high',
+                }}
                 src={sitePath('/assets/vegbooks-wordmark-640.webp')}
                 alt="Vegbooks"
                 width="640"
