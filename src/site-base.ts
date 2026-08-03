@@ -36,6 +36,24 @@ export function stripSiteBase(
     : pathname;
 }
 
+export function isActiveSitePath(
+  currentPath: string,
+  targetPath: string,
+  basePath: string = siteBasePath
+): boolean {
+  const normalize = (value: string) => {
+    const stripped = stripSiteBase(value, basePath);
+    return stripped !== '/' && stripped.endsWith('/')
+      ? stripped.slice(0, -1)
+      : stripped;
+  };
+  const current = normalize(currentPath);
+  const target = normalize(targetPath);
+  return target === '/'
+    ? current === '/'
+    : current === target || current.startsWith(`${target}/`);
+}
+
 export function sitePath(value: string): string {
   return addSiteBase(value);
 }

@@ -1,8 +1,8 @@
 import { state, type Props } from '@askrjs/askr';
 import { SearchIcon } from '@askrjs/lucide/icons/search';
-import { Link } from '@askrjs/askr/router';
+import { currentRoute, Link } from '@askrjs/askr/router';
 import { NavLink } from '@askrjs/themes/components';
-import { sitePath } from '../site-base';
+import { isActiveSitePath, sitePath } from '../site-base';
 import { OptimizedImage } from '../components/optimized-image';
 
 const navItems = [
@@ -28,6 +28,7 @@ const socialItems = [
 
 export function SiteLayout({ children }: Props) {
   const [menuOpen, setMenuOpen] = state(false);
+  const currentPath = currentRoute().path;
   return (
     <>
       <a class="skip-link" href="#main-content">
@@ -76,6 +77,7 @@ export function SiteLayout({ children }: Props) {
               <NavLink
                 key={href}
                 href={sitePath(href)}
+                active={isActiveSitePath(currentPath, href)}
                 onClick={() => setMenuOpen(false)}
               >
                 {label}
@@ -85,6 +87,7 @@ export function SiteLayout({ children }: Props) {
               class="site-nav__search"
               aria-label="Search"
               href={sitePath('/search/')}
+              active={isActiveSitePath(currentPath, '/search/')}
               title="Search"
               onClick={() => setMenuOpen(false)}
             >

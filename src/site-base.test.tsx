@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { JSXElement } from '@askrjs/askr/jsx-runtime';
 import {
   addSiteBase,
+  isActiveSitePath,
   normalizeSiteBasePath,
   prefixElementSiteUrls,
   stripSiteBase,
@@ -28,6 +29,17 @@ describe('site base paths', () => {
     );
     expect(stripSiteBase('/website/reviews/', '/website')).toBe('/reviews/');
     expect(stripSiteBase('/website/', '/website')).toBe('/');
+  });
+
+  it('matches SSG and browser routes across a project-site base', () => {
+    expect(isActiveSitePath('/search', '/search/', '/website')).toBe(true);
+    expect(isActiveSitePath('/website/search/', '/search/', '/website')).toBe(
+      true
+    );
+    expect(
+      isActiveSitePath('/website/topics/animals/', '/topics/', '/website')
+    ).toBe(true);
+    expect(isActiveSitePath('/website/books/', '/', '/website')).toBe(false);
   });
 
   it('prefixes internal URLs throughout migrated post markup', () => {
