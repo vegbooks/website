@@ -1,5 +1,5 @@
 import type { ArticleSummary } from '../content/types';
-import { sitePath } from '../site-base';
+import { SiteLink } from './site-link';
 
 export function ArticleMeta({ article }: { article: ArticleSummary }) {
   return (
@@ -8,7 +8,7 @@ export function ArticleMeta({ article }: { article: ArticleSummary }) {
       <span aria-hidden="true"> · </span>
       <span>
         Review by{' '}
-        <a href={sitePath(article.reviewer.url)}>{article.reviewer.name}</a>
+        <SiteLink href={article.reviewer.url}>{article.reviewer.name}</SiteLink>
       </span>
       {article.categories.length > 0 && (
         <>
@@ -16,7 +16,7 @@ export function ArticleMeta({ article }: { article: ArticleSummary }) {
           {article.categories.map((category, index) => (
             <span key={category.slug}>
               {index > 0 && <span aria-hidden="true">, </span>}
-              <a href={sitePath(category.url)}>{category.name}</a>
+              <SiteLink href={category.url}>{category.name}</SiteLink>
             </span>
           ))}
         </>

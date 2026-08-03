@@ -2,7 +2,7 @@ import type { Props } from '@askrjs/askr';
 import type { ArticleSummary } from '../content/types';
 import { ArticleMeta } from './article-meta';
 import { TaxonomyLinks } from './taxonomy-links';
-import { sitePath } from '../site-base';
+import { SiteLink } from './site-link';
 import { OptimizedImage } from './optimized-image';
 
 interface ArticleCardProps extends Props {
@@ -14,15 +14,11 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
   return (
     <article class="article-card">
       <h2>
-        <a href={sitePath(article.url)}>{article.title}</a>
+        <SiteLink href={article.url}>{article.title}</SiteLink>
       </h2>
       <ArticleMeta article={article} />
       {article.image && (
-        <a
-          class="article-card__image"
-          href={sitePath(article.url)}
-          tabIndex={-1}
-        >
+        <SiteLink class="article-card__image" href={article.url} tabIndex={-1}>
           <OptimizedImage
             src={article.image.src}
             alt={article.image.alt}
@@ -33,11 +29,11 @@ export function ArticleCard({ article, priority = false }: ArticleCardProps) {
             decoding="async"
             fetchpriority={priority ? 'high' : undefined}
           />
-        </a>
+        </SiteLink>
       )}
       <p>{article.excerpt}</p>
       <p>
-        <a href={sitePath(article.url)}>Continue Reading →</a>
+        <SiteLink href={article.url}>Continue Reading →</SiteLink>
       </p>
       <TaxonomyLinks label="Tags" terms={article.tags} />
     </article>

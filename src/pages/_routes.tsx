@@ -24,7 +24,6 @@ import {
   loadCollection,
   loadDirectory,
   loadEditorial,
-  loadMediaCollection,
 } from '../content/content';
 import { clientRouteMeta } from '../content/client-metadata';
 import { SiteLayout } from './_layout';
@@ -33,7 +32,6 @@ import {
   DirectoryRoutePage,
   EditorialRoutePage,
 } from './content-pages';
-import { HomePage } from './index';
 import { NotFoundPage } from './not-found';
 import {
   addSiteBase,
@@ -50,7 +48,7 @@ export function createVegbooksRouteRegistry(basePath = '') {
 
   return createRouteRegistry(() => {
     group({ layout: SiteLayout }, () => {
-      route(at('/'), HomePage, {
+      route(at('/'), CollectionRoutePage, {
         loader: () => loadCollection('home'),
         meta: metadata,
       });
@@ -79,12 +77,13 @@ export function createVegbooksRouteRegistry(basePath = '') {
         );
       }
       route(at('/media'), CollectionRoutePage, {
-        loader: () => loadMediaCollection(),
+        loader: () => loadCollection('media'),
         meta: metadata,
       });
       route(at('/media/page/{page}'), CollectionRoutePage, {
         entries: () => [...mediaPageEntries],
-        loader: ({ params }) => loadMediaCollection(Number(params.page)),
+        loader: ({ params }) =>
+          loadCollection('media', '', Number(params.page)),
         meta: metadata,
       });
       route(at('/topics'), DirectoryRoutePage, {

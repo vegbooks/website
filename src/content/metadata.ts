@@ -3,8 +3,9 @@ import { manifest } from '../generated/manifest';
 import { pageUrl } from './content';
 import { archiveLastModified } from './site-metadata';
 import { deliveryImagePath } from '../image-paths.ts';
+import { COLLECTION_PAGE_SIZE, SITE_URL } from './archive-contract';
 
-const siteUrl = manifest.siteUrl;
+const siteUrl = SITE_URL;
 
 export function routeMeta(pathname: string): RouteMeta {
   const path = normalizePath(pathname);
@@ -162,7 +163,7 @@ function collectionDetails(path: string):
       title: 'All Reviews',
       description: 'Every review published by Vegbooks from 2009 through 2021.',
       page,
-      pages: Math.ceil(manifest.articles.length / manifest.pageSize),
+      pages: Math.ceil(manifest.articles.length / COLLECTION_PAGE_SIZE),
       baseUrl,
     };
   }
@@ -175,7 +176,7 @@ function collectionDetails(path: string):
       description:
         'Vegbooks reviews of movies, music, television, and board games.',
       page,
-      pages: Math.ceil(count / manifest.pageSize),
+      pages: Math.ceil(count / COLLECTION_PAGE_SIZE),
       baseUrl,
     };
   }
@@ -187,7 +188,7 @@ function collectionDetails(path: string):
       title: category.name,
       description: `${category.count} Vegbooks reviews in ${category.name}.`,
       page,
-      pages: Math.ceil(category.count / manifest.pageSize),
+      pages: Math.ceil(category.count / COLLECTION_PAGE_SIZE),
       baseUrl,
     };
   }
@@ -200,7 +201,7 @@ function collectionDetails(path: string):
       title: `Topic: ${topic.name}`,
       description: `${topic.count} Vegbooks review${topic.count === 1 ? '' : 's'} tagged ${topic.name}.`,
       page,
-      pages: Math.ceil(topic.count / manifest.pageSize),
+      pages: Math.ceil(topic.count / COLLECTION_PAGE_SIZE),
       baseUrl,
     };
   }
@@ -215,7 +216,7 @@ function collectionDetails(path: string):
       title: reviewer.name,
       description: `${reviewer.count} Vegbooks review${reviewer.count === 1 ? '' : 's'} by ${reviewer.name}.`,
       page,
-      pages: Math.ceil(reviewer.count / manifest.pageSize),
+      pages: Math.ceil(reviewer.count / COLLECTION_PAGE_SIZE),
       baseUrl,
     };
   }
@@ -230,7 +231,7 @@ function collectionDetails(path: string):
       title: `Reviews from ${year.year}`,
       description: `${year.count} Vegbooks reviews published in ${year.year}.`,
       page,
-      pages: Math.ceil(year.count / manifest.pageSize),
+      pages: Math.ceil(year.count / COLLECTION_PAGE_SIZE),
       baseUrl,
     };
   }

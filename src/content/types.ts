@@ -1,5 +1,3 @@
-import type { JSXElement } from '@askrjs/askr/jsx-runtime';
-
 export interface TaxonomyTerm {
   name: string;
   slug: string;
@@ -32,15 +30,8 @@ export interface PostMetadata extends ArticleSummary {
   next?: Pick<ArticleSummary, 'title' | 'url'>;
 }
 
-export interface Article extends PostMetadata {
-  content: readonly ContentBlock[];
-}
-
-export type PostComponent = () => JSXElement;
-
-export interface PostModule {
-  article: PostMetadata;
-  default: PostComponent;
+export interface ReviewContentModule {
+  default: readonly ContentBlock[];
 }
 
 export interface Reviewer extends TaxonomyTerm {
@@ -121,7 +112,7 @@ export type CollectionKind =
   | 'topic'
   | 'contributor'
   | 'year'
-  | 'search';
+  | 'media';
 
 export interface CollectionPage {
   kind: CollectionKind;
@@ -162,8 +153,6 @@ export interface YearCollection {
 }
 
 export interface ContentManifest {
-  siteUrl: string;
-  pageSize: number;
   articles: readonly ArticleSummary[];
   topics: readonly CollectionTerm[];
   categories: readonly CollectionTerm[];

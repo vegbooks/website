@@ -8,7 +8,7 @@ import type {
   EditorialRouteData,
 } from '../content/content';
 import type {
-  PostComponent,
+  ContentBlock,
   PostMetadata,
   SidebarModel,
 } from '../content/types';
@@ -17,8 +17,7 @@ import {
   CollectionTemplate,
   EditorialPageTemplate,
 } from '../templates';
-import { prefixElementSiteUrls, sitePath } from '../site-base';
-import { optimizeElementImages } from '../components/optimized-image';
+import { SiteLink } from '../components/site-link';
 
 export function CollectionRoutePage() {
   const data = routeData<CollectionRouteData>();
@@ -27,8 +26,7 @@ export function CollectionRoutePage() {
   );
 }
 
-export function createArticleRoutePage(Post: PostComponent) {
-  const SitePost = () => prefixElementSiteUrls(optimizeElementImages(Post()));
+export function createArticleRoutePage(blocks: readonly ContentBlock[]) {
   return function ArticleRoutePage() {
     const data = routeData<{
       article: PostMetadata;
@@ -37,7 +35,7 @@ export function createArticleRoutePage(Post: PostComponent) {
     return (
       <ArticleTemplate
         article={data.article}
-        Post={SitePost}
+        children={<ArticleContent blocks={blocks} />}
         sidebar={data.sidebar}
       />
     );
@@ -73,7 +71,7 @@ export function DirectoryRoutePage() {
           <ul class="term-directory term-directory--topics">
             {data.manifest.topics.map((topic) => (
               <li key={topic.slug}>
-                <a href={sitePath(topic.url)}>{topic.name}</a>{' '}
+                <SiteLink href={topic.url}>{topic.name}</SiteLink>{' '}
                 <span>({topic.count})</span>
               </li>
             ))}
@@ -84,7 +82,7 @@ export function DirectoryRoutePage() {
             <ul class="term-directory">
               {data.manifest.reviewers.map((reviewer) => (
                 <li key={reviewer.slug}>
-                  <a href={sitePath(reviewer.url)}>{reviewer.name}</a>{' '}
+                  <SiteLink href={reviewer.url}>{reviewer.name}</SiteLink>{' '}
                   <span>({reviewer.count})</span>
                 </li>
               ))}
@@ -107,7 +105,7 @@ export function DirectoryRoutePage() {
           <ul class="year-directory">
             {data.manifest.years.map((year) => (
               <li key={year.year}>
-                <a href={sitePath(year.url)}>{year.year}</a>
+                <SiteLink href={year.url}>{year.year}</SiteLink>
                 <span>{year.count} reviews</span>
               </li>
             ))}

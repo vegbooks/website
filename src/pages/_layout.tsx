@@ -1,35 +1,33 @@
 import { state, type Props } from '@askrjs/askr';
 import { SearchIcon } from '@askrjs/lucide/icons/search';
-import { currentRoute, Link } from '@askrjs/askr/router';
-import { sitePath, stripSiteBase } from '../site-base';
+import { Link } from '@askrjs/askr/router';
+import { NavLink } from '@askrjs/themes/components';
+import { sitePath } from '../site-base';
 import { OptimizedImage } from '../components/optimized-image';
+
+const navItems = [
+  ['Home', '/'],
+  ['Favorites', '/favorites/'],
+  ['Books', '/books/'],
+  ['Movies, Etc.', '/media/'],
+  ['Contributors', '/contributors/'],
+  ['About', '/about/'],
+  ['Topics', '/topics/'],
+  ['Browse by Year', '/archive/'],
+] as const;
+
+const socialItems = [
+  ['Twitter', 'https://twitter.com/vegbooks', '/assets/social-twitter.png'],
+  ['Facebook', 'https://facebook.com/vegbooks', '/assets/social-facebook.png'],
+  [
+    'Pinterest',
+    'https://www.pinterest.com/jessicavegbooks/',
+    '/assets/social-pinterest.png',
+  ],
+] as const;
 
 export function SiteLayout({ children }: Props) {
   const [menuOpen, setMenuOpen] = state(false);
-  const active = stripSiteBase(currentRoute().path);
-  const navItems = [
-    ['Home', '/'],
-    ['Favorites', '/favorites/'],
-    ['Books', '/books/'],
-    ['Movies, Etc.', '/media/'],
-    ['Contributors', '/contributors/'],
-    ['About', '/about/'],
-    ['Topics', '/topics/'],
-    ['Browse by Year', '/archive/'],
-  ] as const;
-  const socialItems = [
-    ['Twitter', 'https://twitter.com/vegbooks', '/assets/social-twitter.png'],
-    [
-      'Facebook',
-      'https://facebook.com/vegbooks',
-      '/assets/social-facebook.png',
-    ],
-    [
-      'Pinterest',
-      'https://www.pinterest.com/jessicavegbooks/',
-      '/assets/social-pinterest.png',
-    ],
-  ] as const;
   return (
     <>
       <a class="skip-link" href="#main-content">
@@ -75,25 +73,23 @@ export function SiteLayout({ children }: Props) {
             aria-label="Primary navigation"
           >
             {navItems.map(([label, href]) => (
-              <Link
+              <NavLink
                 key={href}
-                aria-current={isActive(active, href) ? 'page' : undefined}
                 href={sitePath(href)}
                 onClick={() => setMenuOpen(false)}
               >
                 {label}
-              </Link>
+              </NavLink>
             ))}
-            <Link
+            <NavLink
               class="site-nav__search"
               aria-label="Search"
-              aria-current={isActive(active, '/search/') ? 'page' : undefined}
               href={sitePath('/search/')}
               title="Search"
               onClick={() => setMenuOpen(false)}
             >
               <SearchIcon size={18} aria-hidden="true" />
-            </Link>
+            </NavLink>
             <span class="site-nav__social" aria-label="Vegbooks social sites">
               {socialItems.map(([label, href, icon]) => (
                 <a
@@ -117,9 +113,4 @@ export function SiteLayout({ children }: Props) {
       </div>
     </>
   );
-}
-
-function isActive(pathname: string, href: string): boolean {
-  if (href === '/') return pathname === '/';
-  return pathname === href || pathname.startsWith(href);
 }

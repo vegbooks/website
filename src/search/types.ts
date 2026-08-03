@@ -38,39 +38,31 @@ export interface SearchIndex {
   averageLength: number;
 }
 
-export interface SearchFilters {
-  categories?: readonly string[];
-  tags?: readonly string[];
-  years?: readonly number[];
-}
-
 export interface SearchRequest {
   query: string;
-  filters?: SearchFilters;
+  /** @deprecated retained for index compatibility; UI exposes query-only search. */
+  filters?: {
+    categories?: readonly string[];
+    tags?: readonly string[];
+    years?: readonly number[];
+  };
+  /** @deprecated query matching is always all-term prefix matching. */
   match?: 'all' | 'any';
-  prefix?: boolean;
   limit?: number;
   offset?: number;
 }
 
 export interface SearchHit {
   document: SearchDocument;
-  score: number;
-  matchedTerms: readonly string[];
-}
-
-export interface SearchFacetValue {
-  value: string;
-  count: number;
 }
 
 export interface SearchResponse {
   total: number;
   hits: readonly SearchHit[];
+  /** @deprecated no longer rendered by the search page. */
   facets: {
-    categories: readonly SearchFacetValue[];
-    tags: readonly SearchFacetValue[];
-    years: readonly SearchFacetValue[];
+    categories: readonly unknown[];
+    tags: readonly unknown[];
+    years: readonly unknown[];
   };
-  elapsedMs: number;
 }

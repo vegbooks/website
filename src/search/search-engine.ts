@@ -1,8 +1,6 @@
 import { tokenize } from './tokenize';
 import type {
   IndexedDocument,
-  SearchFacetValue,
-  SearchHit,
   SearchIndex,
   SearchRequest,
   SearchResponse,
@@ -11,7 +9,6 @@ import type {
 interface Candidate {
   score: number;
   groups: Set<number>;
-  terms: Set<string>;
 }
 
 export class SearchEngine {
@@ -51,17 +48,15 @@ export class SearchEngine {
   }
 
   search(request: SearchRequest): SearchResponse {
-    const started = performance.now();
     const queryTerms = [...new Set(tokenize(request.query))];
     const candidates = new Map<number, Candidate>();
-    const allowPrefix = request.prefix ?? true;
+    const allowPrefix = true;
 
     if (queryTerms.length === 0) {
       this.documents.forEach((_, document) => {
         candidates.set(document, {
           score: 0,
           groups: new Set<number>(),
-          terms: new Set<string>(),
         });
       });
     }
@@ -83,38 +78,39 @@ export class SearchEngine {
           const candidate = candidates.get(documentIndex) ?? {
             score: 0,
             groups: new Set<number>(),
-            terms: new Set<string>(),
           };
           candidate.score +=
             inverseDocumentFrequency * this.bm25(frequency, document);
           candidate.groups.add(group);
-          candidate.terms.add(term);
           candidates.set(documentIndex, candidate);
         }
       }
     });
 
-    const matchAll = (request.match ?? 'all') === 'all';
     const ranked = [...candidates.entries()]
-      .filter(
-        ([, candidate]) =>
-          !matchAll || candidate.groups.size === queryTerms.length
-      )
+      .filter(([, candidate]) => candidate.groups.size === queryTerms.length)
       .filter(([document]) =>
         this.matchesFilters(this.documents[document], request)
       )
-      .map(
-        ([document, candidate]): SearchHit => ({
-          document: this.documents[document],
-          score: candidate.score,
-          matchedTerms: [...candidate.terms].sort(),
-        })
-      )
       .sort((left, right) =>
-        right.score !== left.score
-          ? right.score - left.score
-          : left.document.url.localeCompare(right.document.url)
-      );
+        right[1].score !== left[1].score
+          ? right[1].score - left[1].score
+          : this.documents[left[0]].url.localeCompare(
+              this.documents[right[0]].url
+            )
+      )
+      .map(([document]) => ({ document: this.documents[document] }));
+    const facetValues = (
+      values: (document: IndexedDocument) => readonly string[]
+    ) => {
+      const counts = new Map<string, number>();
+      for (const hit of ranked)
+        for (const value of new Set(values(hit.document)))
+          counts.set(value, (counts.get(value) ?? 0) + 1);
+      return [...counts]
+        .map(([value, count]) => ({ value, count }))
+        .sort((left, right) => left.value.localeCompare(right.value));
+    };
 
     const offset = Math.max(0, request.offset ?? 0);
     const limit = Math.min(100, Math.max(1, request.limit ?? 20));
@@ -122,14 +118,38 @@ export class SearchEngine {
       total: ranked.length,
       hits: ranked.slice(offset, offset + limit),
       facets: {
-        categories: facets(ranked, (document) => document.categories ?? []),
-        tags: facets(ranked, (document) => document.tags ?? []),
-        years: facets(ranked, (document) =>
+        categories: facetValues((document) => document.categories ?? []),
+        tags: facetValues((document) => document.tags ?? []),
+        years: facetValues((document) =>
           document.date ? [document.date.slice(0, 4)] : []
         ),
       },
-      elapsedMs: performance.now() - started,
     };
+  }
+
+  private matchesFilters(
+    document: IndexedDocument,
+    request: SearchRequest
+  ): boolean {
+    const filters = request.filters;
+    if (!filters) return true;
+    const includes = (
+      values: readonly string[] | undefined,
+      wanted: readonly string[] | undefined
+    ) =>
+      !wanted?.length ||
+      !!values?.some((value) =>
+        wanted.some(
+          (item) => value.toLocaleLowerCase() === item.toLocaleLowerCase()
+        )
+      );
+    return (
+      includes(document.categories, filters.categories) &&
+      includes(document.tags, filters.tags) &&
+      (!filters.years?.length ||
+        (!!document.date &&
+          filters.years.includes(Number(document.date.slice(0, 4)))))
+    );
   }
 
   private expand(term: string, prefix: boolean): readonly string[] {
@@ -157,24 +177,6 @@ export class SearchEngine {
       (frequency * (k1 + 1)) / (frequency + k1 * (1 - b + b * lengthRatio))
     );
   }
-
-  private matchesFilters(
-    document: IndexedDocument,
-    request: SearchRequest
-  ): boolean {
-    const filters = request.filters;
-    if (!filters) return true;
-    if (!includesAny(document.categories, filters.categories)) return false;
-    if (!includesAny(document.tags, filters.tags)) return false;
-    if (
-      filters.years?.length &&
-      (!document.date ||
-        !filters.years.includes(Number(document.date.slice(0, 4))))
-    ) {
-      return false;
-    }
-    return true;
-  }
 }
 
 function lowerBound(values: readonly string[], target: string): number {
@@ -186,36 +188,4 @@ function lowerBound(values: readonly string[], target: string): number {
     else high = middle;
   }
   return low;
-}
-
-function includesAny(
-  documentValues: readonly string[] | undefined,
-  requestedValues: readonly string[] | undefined
-): boolean {
-  if (!requestedValues?.length) return true;
-  if (!documentValues?.length) return false;
-  const normalized = new Set(
-    documentValues.map((value) => value.toLocaleLowerCase())
-  );
-  return requestedValues.some((value) =>
-    normalized.has(value.toLocaleLowerCase())
-  );
-}
-
-function facets(
-  hits: readonly SearchHit[],
-  values: (document: SearchHit['document']) => readonly string[]
-): SearchFacetValue[] {
-  const counts = new Map<string, number>();
-  for (const hit of hits) {
-    for (const value of new Set(values(hit.document))) {
-      counts.set(value, (counts.get(value) ?? 0) + 1);
-    }
-  }
-  return [...counts]
-    .map(([value, count]) => ({ value, count }))
-    .sort(
-      (left, right) =>
-        right.count - left.count || left.value.localeCompare(right.value)
-    );
 }

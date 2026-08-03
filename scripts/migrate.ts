@@ -483,8 +483,6 @@ const reviewers = [...reviewerMap.entries()]
   .sort((left, right) => left.name.localeCompare(right.name));
 
 const manifest = {
-  siteUrl: SITE_URL,
-  pageSize: PAGE_SIZE,
   articles: articles.map(
     ({ content: _content, previous: _previous, next: _next, ...summary }) =>
       summary
@@ -570,7 +568,7 @@ mkdirSync(postRoot, { recursive: true });
 mkdirSync(mediaRoot, { recursive: true });
 
 for (const article of articles) {
-  writeFile(join(postRoot, `${article.slug}.tsx`), renderPostModule(article));
+  writeFile(join(postRoot, `${article.slug}.ts`), renderPostModule(article));
 }
 writeFile(
   join(generatedRoot, 'manifest.ts'),
@@ -808,6 +806,15 @@ function imageLink(
     if (isElement(ancestor) && ancestor.tagName === 'a') {
       const href = attr(ancestor, 'href');
       if (!href) return {};
+      // WordPress occasionally emitted extensionless full-size attachment URLs
+      // while the displayed image carries the real filename. Preserve the
+      // displayed asset instead of treating the attachment slug as media.
+      if (/\/wp-content\/uploads\/\d{4}\/\d{2}\/[^/.]+$/i.test(href)) {
+        warnings.push(
+          `Resolved extensionless linked media ${href} to displayed image ${imageSrc}`
+        );
+        return { href: imageSrc };
+      }
       const rewritten = archivedMediaExists(href, context.legacyUrl)
         ? rewriteLink(href, context.legacyUrl)
         : imageSrc;
@@ -1509,111 +1516,16 @@ function searchTokens(value: string): string[] {
 }
 
 function renderImportMap(articles: Article[]): string {
-  return `import type { PostModule } from '../content/types';\n\nexport const articleImports: Readonly<Record<string, () => Promise<PostModule>>> = {\n${articles
+  return `import type { ReviewContentModule } from '../content/types';\n\nexport const articleImports: Readonly<Record<string, () => Promise<ReviewContentModule>>> = {\n${articles
     .map(
       (article) =>
-        `  ${JSON.stringify(article.slug)}: () => import('../posts/${article.slug}.tsx'),`
+        `  ${JSON.stringify(article.slug)}: () => import('../posts/${article.slug}.ts'),`
     )
     .join('\n')}\n};\n`;
 }
 
 function renderPostModule(article: Article): string {
-  const { content, ...metadata } = article;
-  return `import type { PostMetadata } from '../content/types';\n\nexport const article = ${json(metadata)} satisfies PostMetadata;\n\nexport default function Post() {\n  return (\n    <div class="article-content">\n${renderPostBlocks(content, 6)}\n    </div>\n  );\n}\n`;
-}
-
-function renderPostBlocks(
-  blocks: readonly ContentBlock[],
-  depth: number
-): string {
-  return blocks.map((block) => renderPostBlock(block, depth)).join('\n');
-}
-
-function renderPostBlock(block: ContentBlock, depth: number): string {
-  const space = ' '.repeat(depth);
-  switch (block.type) {
-    case 'paragraph':
-      return `${space}<p>${renderPostInline(block.children)}</p>`;
-    case 'heading':
-      return `${space}<h${block.level}>${renderPostInline(block.children)}</h${block.level}>`;
-    case 'image': {
-      const className = `content-image content-image--${block.align ?? 'center'}`;
-      const dimensions = `${block.width ? ` width={${block.width}}` : ''}${block.height ? ` height={${block.height}}` : ''}`;
-      const imageElement = `<img src={${JSON.stringify(block.src)}} alt={${JSON.stringify(block.alt)}}${dimensions} />`;
-      const linkAttributes = block.external
-        ? ' target="_blank" rel="noopener noreferrer"'
-        : '';
-      const image = block.href
-        ? `${' '.repeat(depth + 2)}<a href={${JSON.stringify(block.href)}}${linkAttributes}>${imageElement}</a>`
-        : `${' '.repeat(depth + 2)}${imageElement}`;
-      const caption = block.caption
-        ? `\n${' '.repeat(depth + 2)}<figcaption>${renderPostInline(block.caption)}</figcaption>`
-        : '';
-      return `${space}<figure class=${JSON.stringify(className)}>\n${image}${caption}\n${space}</figure>`;
-    }
-    case 'quote': {
-      const children = renderPostBlocks(block.children, depth + 2);
-      const cite = block.cite
-        ? `\n${' '.repeat(depth + 2)}<cite>{${JSON.stringify(block.cite)}}</cite>`
-        : '';
-      return `${space}<blockquote>\n${children}${cite}\n${space}</blockquote>`;
-    }
-    case 'list': {
-      const tag = block.ordered ? 'ol' : 'ul';
-      const items = block.items
-        .map(
-          (item) => `${' '.repeat(depth + 2)}<li>${renderPostInline(item)}</li>`
-        )
-        .join('\n');
-      return `${space}<${tag}>\n${items}\n${space}</${tag}>`;
-    }
-    case 'address':
-      return `${space}<address>${renderPostInline(block.children)}</address>`;
-    case 'table': {
-      const caption = block.caption
-        ? `\n${' '.repeat(depth + 4)}<caption>${renderPostInline(block.caption)}</caption>`
-        : '';
-      const rows = block.rows
-        .map((row) => {
-          const cells = row.cells
-            .map((cell) => {
-              const tag = cell.header ? 'th' : 'td';
-              const scope = cell.header ? ' scope="col"' : '';
-              return `${' '.repeat(depth + 8)}<${tag}${scope}>${renderPostInline(cell.children)}</${tag}>`;
-            })
-            .join('\n');
-          return `${' '.repeat(depth + 6)}<tr>\n${cells}\n${' '.repeat(depth + 6)}</tr>`;
-        })
-        .join('\n');
-      return `${space}<div class="table-scroll" tabIndex={0}>\n${' '.repeat(depth + 2)}<table>${caption}\n${' '.repeat(depth + 4)}<tbody>\n${rows}\n${' '.repeat(depth + 4)}</tbody>\n${' '.repeat(depth + 2)}</table>\n${space}</div>`;
-    }
-    case 'separator':
-      return `${space}<hr />`;
-  }
-}
-
-function renderPostInline(content: readonly InlineContent[]): string {
-  return content
-    .map((node) => {
-      if (typeof node === 'string') return `{${JSON.stringify(node)}}`;
-      if (node.type === 'lineBreak') return '<br />';
-      const children = renderPostInline(node.children);
-      switch (node.type) {
-        case 'emphasis':
-          return `<em>${children}</em>`;
-        case 'strong':
-          return `<strong>${children}</strong>`;
-        case 'code':
-          return `<code>${children}</code>`;
-        case 'link': {
-          const external = node.external
-            ? ' target="_blank" rel="noopener noreferrer"'
-            : '';
-          return `<a href={${JSON.stringify(node.href)}}${external}>${children}</a>`;
-        }
-      }
-    })
-    .join('');
+  return `import type { ContentBlock } from '../content/types';\n\nconst content = ${json(article.content)} satisfies readonly ContentBlock[];\n\nexport default content;\n`;
 }
 
 function categoryTerms(primary: Element): Term[] {

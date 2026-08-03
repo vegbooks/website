@@ -4,8 +4,6 @@ export { SearchEngine } from './search-engine';
 export { normalizeText, tokenize } from './tokenize';
 export type {
   SearchDocument,
-  SearchFacetValue,
-  SearchFilters,
   SearchHit,
   SearchIndex,
   SearchRequest,

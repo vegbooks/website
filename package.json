@@ -25,8 +25,7 @@
   "dependencies": {
     "@askrjs/askr": "0.0.85",
     "@askrjs/lucide": "^0.0.6",
-    "@askrjs/themes": "^0.0.21",
-    "@askrjs/ui": "^0.0.24"
+    "@askrjs/themes": "^0.0.21"
   },
   "devDependencies": {
     "@askrjs/cli": "0.0.20",

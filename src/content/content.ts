@@ -7,6 +7,7 @@ import type {
   PostMetadata,
   SidebarModel,
 } from './types';
+import { COLLECTION_PAGE_SIZE } from './archive-contract';
 
 export interface CollectionRouteData {
   collection: CollectionPage;
@@ -58,7 +59,14 @@ export async function loadArticle(slug: string): Promise<{
 }
 
 export async function loadCollection(
-  kind: 'home' | 'reviews' | 'category' | 'topic' | 'contributor' | 'year',
+  kind:
+    | 'home'
+    | 'reviews'
+    | 'category'
+    | 'topic'
+    | 'contributor'
+    | 'year'
+    | 'media',
   key = '',
   page = 1
 ): Promise<CollectionRouteData> {
@@ -101,12 +109,20 @@ export async function loadCollection(
     description = `${year.count} Vegbooks reviews published in ${year.year}.`;
     baseUrl = year.url;
     articles = summariesForSlugs(manifest, year.articleSlugs);
+  } else if (kind === 'media') {
+    title = 'Movies, Etc.';
+    description =
+      'Vegbooks reviews of movies, music, television, and board games.';
+    baseUrl = '/media/';
+    articles = manifest.articles.filter((article) =>
+      article.categories.some((category) => category.slug !== 'books')
+    );
   }
 
   const totalPages =
     kind === 'home'
       ? 1
-      : Math.max(1, Math.ceil(articles.length / manifest.pageSize));
+      : Math.max(1, Math.ceil(articles.length / COLLECTION_PAGE_SIZE));
   if (!Number.isInteger(page) || page < 1 || page > totalPages) {
     throw new Error(`Invalid collection page ${page} for ${baseUrl}`);
   }
@@ -124,47 +140,10 @@ export async function loadCollection(
       description,
       canonicalUrl,
       articles: articles.slice(
-        (page - 1) * manifest.pageSize,
-        page * manifest.pageSize
+        (page - 1) * COLLECTION_PAGE_SIZE,
+        page * COLLECTION_PAGE_SIZE
       ),
       pagination,
-    },
-    sidebar: buildSidebar(manifest),
-  };
-}
-
-export async function loadMediaCollection(
-  page = 1
-): Promise<CollectionRouteData> {
-  const manifest = await loadManifest();
-  const articles = manifest.articles.filter((article) =>
-    article.categories.some((category) => category.slug !== 'books')
-  );
-  const totalPages = Math.max(
-    1,
-    Math.ceil(articles.length / manifest.pageSize)
-  );
-  if (!Number.isInteger(page) || page < 1 || page > totalPages) {
-    throw new Error(`Invalid media page: ${page}`);
-  }
-  const baseUrl = '/media/';
-  return {
-    collection: {
-      kind: 'category',
-      title: page === 1 ? 'Movies, Etc.' : `Movies, Etc. — Page ${page}`,
-      description:
-        'Vegbooks reviews of movies, music, television, and board games.',
-      canonicalUrl: pageUrl(baseUrl, page),
-      articles: articles.slice(
-        (page - 1) * manifest.pageSize,
-        page * manifest.pageSize
-      ),
-      pagination: {
-        current: page,
-        total: totalPages,
-        ...(page > 1 ? { previousUrl: pageUrl(baseUrl, page - 1) } : {}),
-        ...(page < totalPages ? { nextUrl: pageUrl(baseUrl, page + 1) } : {}),
-      },
     },
     sidebar: buildSidebar(manifest),
   };

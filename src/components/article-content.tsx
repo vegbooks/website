@@ -1,7 +1,6 @@
 import type { Props } from '@askrjs/askr';
 import type { ContentBlock, InlineContent } from '../content/types';
-import { deliveryImagePath } from '../image-paths.ts';
-import { sitePath } from '../site-base';
+import { SiteLink } from './site-link';
 import { OptimizedImage } from './optimized-image';
 
 export function ArticleContent({
@@ -57,13 +56,13 @@ function ContentBlockView({ block }: ContentBlockViewProps) {
           class={`content-image content-image--${block.align ?? 'center'}`}
         >
           {block.href ? (
-            <a
-              href={deliverySitePath(block.href)}
-              target={block.external ? '_blank' : undefined}
-              rel={block.external ? 'noopener noreferrer' : undefined}
-            >
-              {image}
-            </a>
+            block.external ? (
+              <a href={block.href} target="_blank" rel="noopener noreferrer">
+                {image}
+              </a>
+            ) : (
+              <SiteLink href={block.href}>{image}</SiteLink>
+            )
           ) : (
             image
           )}
@@ -146,22 +145,22 @@ function InlineContentView({ content }: { content: readonly InlineContent[] }) {
           case 'code':
             return <code key={index}>{children}</code>;
           case 'link':
-            return (
+            return node.external ? (
               <a
                 key={index}
-                href={deliverySitePath(node.href)}
-                target={node.external ? '_blank' : undefined}
-                rel={node.external ? 'noopener noreferrer' : undefined}
+                href={node.href}
+                target="_blank"
+                rel="noopener noreferrer"
               >
                 {children}
               </a>
+            ) : (
+              <SiteLink key={index} href={node.href}>
+                {children}
+              </SiteLink>
             );
         }
       })}
     </>
   );
-}
-
-function deliverySitePath(path: string): string {
-  return sitePath(deliveryImagePath(path, 'webp') ?? path);
 }

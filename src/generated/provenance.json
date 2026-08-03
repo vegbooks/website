@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
-  "archiveCommit": "85e281b57e83fbdc321366c76cc04b178659d77d",
-  "archiveCommitDate": "2026-07-19T18:05:41-04:00",
+  "archiveCommit": "5ba1de20af1335782e1f6ca1cc823b3f8601c119",
+  "archiveCommitDate": "2026-08-02T17:53:16-04:00",
   "inventory": "canonical type-post and selected type-page documents",
   "counts": {
     "htmlFilesScanned": 6182,
@@ -13,7 +13,7 @@
     "years": 13,
     "categories": 5,
     "editorials": 4,
-    "mediaFiles": 889,
+    "mediaFiles": 1577,
     "duplicateMediaNames": 485,
     "discardedMediaVariants": 485,
     "searchIndexBytes": 1567059,
@@ -14052,6 +14052,7 @@
   ],
   "warnings": [
     "Removed WordPress-only link: https://vegbooks.org/index.php/feed/",
+    "Resolved extensionless linked media https://vegbooks.org/wp-content/uploads/2011/11/jpg to displayed image /media/2011/11/jpg.jpg",
     "Resolved missing linked media https://vegbooks.org/wp-content/uploads/2009/10/9780152001223_lres.jpg to displayed image /media/2009/10/9780152001223-lres.jpg",
     "Resolved missing linked media https://vegbooks.org/wp-content/uploads/2009/10/9780753458389.jpg to displayed image /media/2009/10/9780753458389.jpg",
     "Resolved missing linked media https://vegbooks.org/wp-content/uploads/2009/10/VegBlogger.jpg to displayed image /media/2009/10/veg-blogger.jpg",
@@ -14467,7 +14468,6 @@
     "Resolved missing linked media https://vegbooks.org/wp-content/uploads/2011/11/SWIRL-BY-SWIRL_hres.jpg to displayed image /media/2011/11/swirl-by-swirl-hres.jpg",
     "Resolved missing linked media https://vegbooks.org/wp-content/uploads/2011/11/book-1.jpg to displayed image /media/2011/11/book-1.jpg",
     "Resolved missing linked media https://vegbooks.org/wp-content/uploads/2011/11/feathered-friends-must-fly.jpg to displayed image /media/2011/11/feathered-friends-must-fly.jpg",
-    "Resolved missing linked media https://vegbooks.org/wp-content/uploads/2011/11/jpg to displayed image /media/2011/11/jpg.jpg",
     "Resolved missing linked media https://vegbooks.org/wp-content/uploads/2011/11/mountainlovedbird.jpg to displayed image /media/2011/11/mountainlovedbird.jpg",
     "Resolved missing linked media https://vegbooks.org/wp-content/uploads/2011/12/1883220785_A.jpg to displayed image /media/2011/12/1883220785-a.jpg",
     "Resolved missing linked media https://vegbooks.org/wp-content/uploads/2011/12/1883220793.jpg to displayed image /media/2011/12/1883220793.jpg",

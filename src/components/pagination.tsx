@@ -1,5 +1,5 @@
 import type { Pagination as PaginationModel } from '../content/types';
-import { sitePath } from '../site-base';
+import { SiteLink } from './site-link';
 
 export function Pagination({ pagination }: { pagination: PaginationModel }) {
   if (pagination.total <= 1) return null;
@@ -7,7 +7,7 @@ export function Pagination({ pagination }: { pagination: PaginationModel }) {
     <nav class="pagination" aria-label="Collection pages">
       <span>
         {pagination.previousUrl && (
-          <a href={sitePath(pagination.previousUrl)}>← Newer</a>
+          <SiteLink href={pagination.previousUrl}>← Newer</SiteLink>
         )}
       </span>
       <span>
@@ -15,7 +15,7 @@ export function Pagination({ pagination }: { pagination: PaginationModel }) {
       </span>
       <span>
         {pagination.nextUrl && (
-          <a href={sitePath(pagination.nextUrl)}>Older →</a>
+          <SiteLink href={pagination.nextUrl}>Older →</SiteLink>
         )}
       </span>
     </nav>

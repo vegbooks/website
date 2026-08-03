@@ -45,7 +45,7 @@ describe('site base paths', () => {
     const children = element.props.children as JSXElement[];
     expect(children[0].props.href).toBe('/website/reviews/the-zoo-box/');
     expect((children[0].props.children as JSXElement).props.src).toBe(
-      '/website/media/zoo-box.jpg'
+      '/website/media/zoo-box.webp'
     );
     expect(children[1].props.href).toBe('https://example.com/');
   });

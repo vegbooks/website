@@ -1,8 +1,6 @@
 import type { ContentManifest } from '../content/types';
 
 export const manifest = {
-  "siteUrl": "https://vegbooks.org",
-  "pageSize": 24,
   "articles": [
     {
       "id": "11145",

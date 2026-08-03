@@ -16,7 +16,13 @@ export function deliveryImagePath(
   ) {
     return undefined;
   }
-  const base = deliveryImages[pathname];
+  const sourceBase = pathname.replace(/\.(?:gif|jpe?g|png)$/i, '');
+  // Migration artifacts use their canonical source basename. Keep the
+  // historical collision alias for the one published compatibility case.
+  const base =
+    pathname === '/media/2009/12/cover.jpg'
+      ? (deliveryImages[pathname] ?? sourceBase)
+      : sourceBase;
   if (!base) return undefined;
   if (value.startsWith('/')) {
     const suffix = value.slice(pathname.length);

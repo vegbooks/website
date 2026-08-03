@@ -2,20 +2,17 @@ import { ArchiveSidebar } from '../components/archive-sidebar';
 import { ArticleMeta } from '../components/article-meta';
 import { ContentLayout } from '../components/content-layout';
 import { TaxonomyLinks } from '../components/taxonomy-links';
-import type {
-  PostComponent,
-  PostMetadata,
-  SidebarModel,
-} from '../content/types';
-import { sitePath } from '../site-base';
+import type { PostMetadata, SidebarModel } from '../content/types';
+import { SiteLink } from '../components/site-link';
+import type { Props } from '@askrjs/askr';
 
 export function ArticleTemplate({
   article,
-  Post,
+  children,
   sidebar,
-}: {
+}: Props & {
   article: PostMetadata;
-  Post: PostComponent;
+  children: Props['children'];
   sidebar?: SidebarModel;
 }) {
   return (
@@ -25,20 +22,22 @@ export function ArticleTemplate({
           <h1>{article.title}</h1>
           <ArticleMeta article={article} />
         </header>
-        <Post />
+        {children}
         <footer>
           <TaxonomyLinks label="Tags" terms={article.tags} />
           <nav class="article-neighbors" aria-label="Adjacent reviews">
             <span>
               {article.previous && (
-                <a href={sitePath(article.previous.url)}>
+                <SiteLink href={article.previous.url}>
                   ← {article.previous.title}
-                </a>
+                </SiteLink>
               )}
             </span>
             <span>
               {article.next && (
-                <a href={sitePath(article.next.url)}>{article.next.title} →</a>
+                <SiteLink href={article.next.url}>
+                  {article.next.title} →
+                </SiteLink>
               )}
             </span>
           </nav>

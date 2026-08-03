@@ -1,5 +1,5 @@
 import type { TaxonomyTerm } from '../content/types';
-import { sitePath } from '../site-base';
+import { SiteLink } from './site-link';
 
 export function TaxonomyLinks({
   label,
@@ -15,7 +15,7 @@ export function TaxonomyLinks({
       {terms.map((term, index) => (
         <span key={term.slug}>
           {index > 0 && <span aria-hidden="true"> · </span>}
-          <a href={sitePath(term.url)}>{term.name}</a>
+          <SiteLink href={term.url}>{term.name}</SiteLink>
         </span>
       ))}
     </p>
