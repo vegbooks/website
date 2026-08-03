@@ -3,6 +3,7 @@ import type { ContentBlock, InlineContent } from '../content/types';
 import { SiteLink } from './site-link';
 import { OptimizedImage } from './optimized-image';
 import { deliveryImagePath } from '../image-paths.ts';
+import { sitePath } from '../site-base';
 
 export function ArticleContent({
   blocks,
@@ -59,7 +60,9 @@ function ContentBlockView({ block }: ContentBlockViewProps) {
           {block.href ? (
             block.external ? (
               <a
-                href={deliveryImagePath(block.href, 'webp') ?? block.href}
+                href={sitePath(
+                  deliveryImagePath(block.href, 'webp') ?? block.href
+                )}
                 target="_blank"
                 rel="noopener noreferrer"
               >
@@ -153,7 +156,7 @@ function InlineContentView({ content }: { content: readonly InlineContent[] }) {
             return node.external ? (
               <a
                 key={index}
-                href={node.href}
+                href={sitePath(node.href)}
                 target="_blank"
                 rel="noopener noreferrer"
               >
