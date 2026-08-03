@@ -2,6 +2,7 @@ import type { Props } from '@askrjs/askr';
 import type { ContentBlock, InlineContent } from '../content/types';
 import { SiteLink } from './site-link';
 import { OptimizedImage } from './optimized-image';
+import { deliveryImagePath } from '../image-paths.ts';
 
 export function ArticleContent({
   blocks,
@@ -57,7 +58,11 @@ function ContentBlockView({ block }: ContentBlockViewProps) {
         >
           {block.href ? (
             block.external ? (
-              <a href={block.href} target="_blank" rel="noopener noreferrer">
+              <a
+                href={deliveryImagePath(block.href, 'webp') ?? block.href}
+                target="_blank"
+                rel="noopener noreferrer"
+              >
                 {image}
               </a>
             ) : (

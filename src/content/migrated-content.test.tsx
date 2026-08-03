@@ -72,12 +72,12 @@ describe('migrated WordPress content', () => {
     ).not.toMatch(/<h[1456]>/);
   });
 
-  it('resolves the two missing thumbnails to archived full-size originals', () => {
+  it('resolves the two missing thumbnails to archived full-size delivery images', () => {
     expect(renderContent(ApplesPost)).toContain(
-      '/media/2011/04/apples-cherries-c.jpg'
+      '/media/2011/04/apples-cherries-red-raspberries.webp'
     );
     expect(renderContent(HuffPuffPost)).toContain(
-      '/media/2012/05/9781419701702-huff-puff-cv.jpg'
+      '/media/2012/05/huff-and-puff.webp'
     );
   });
 
@@ -88,6 +88,12 @@ describe('migrated WordPress content', () => {
       readFileSync(new URL(`../../public${image}`, import.meta.url))
     );
     expect(dimensions).toMatchObject({ width: 450, height: 306 });
+  });
+
+  it('uses canonical delivery names for explicitly renamed media', () => {
+    expect(deliveryImagePath('/media/2009/10/gv-vb.jpg', 'webp')).toBe(
+      '/media/2009/10/generation-veggie-top-10-books.webp'
+    );
   });
 
   it('uses the review title for an undocumented leading image alt', () => {
