@@ -1,4 +1,4 @@
-import { Show, state } from '@askrjs/askr';
+import { state } from '@askrjs/askr';
 import { SearchIcon } from '@askrjs/lucide/icons/search';
 import { resource } from '@askrjs/askr/resources';
 import { currentRoute, updateRouteQuery } from '@askrjs/askr/router';
@@ -29,6 +29,19 @@ export function SearchPage() {
       );
     },
     [browserReady]
+  );
+
+  const currentEngine = search.value;
+  const result = currentEngine
+    ? currentEngine.search({
+        query: query(),
+        offset: (page() - 1) * SEARCH_PAGE_SIZE,
+        limit: SEARCH_PAGE_SIZE,
+      })
+    : undefined;
+  const totalPages = Math.max(
+    1,
+    Math.ceil((result?.total ?? 0) / SEARCH_PAGE_SIZE)
   );
 
   const syncUrl = (nextPage = 1, nextQuery = query()) => {
@@ -79,96 +92,62 @@ export function SearchPage() {
             </span>
           </label>
         </form>
-        <Show
-          when={() => search.error}
-          fallback={
-            <Show
-              when={() => search.value}
-              fallback={<p role="status">Loading the search index…</p>}
+        {search.error ? (
+          <p role="alert">Search is unavailable: {search.error.message}</p>
+        ) : !currentEngine ? (
+          <p role="status">Loading the search index…</p>
+        ) : result?.total === 0 ? (
+          <p class="search-empty">No reviews matched those search choices.</p>
+        ) : (
+          <>
+            <p class="search-count" role="status">
+              {result?.total} result{result?.total === 1 ? '' : 's'}
+            </p>
+            <ol
+              class="search-results"
+              start={(page() - 1) * SEARCH_PAGE_SIZE + 1}
             >
-              {(engine) => (
-                <SearchResults
-                  engine={engine}
-                  query={query}
-                  page={page}
-                  onPageChange={(nextPage) => syncUrl(nextPage)}
-                />
-              )}
-            </Show>
-          }
-        >
-          {(error) => (
-            <p role="alert">Search is unavailable: {error.message}</p>
-          )}
-        </Show>
+              {result?.hits.map((hit) => (
+                <li key={hit.document.id}>
+                  <h2>
+                    <SiteLink href={hit.document.url}>
+                      {hit.document.title}
+                    </SiteLink>
+                  </h2>
+                  {hit.document.summary && <p>{hit.document.summary}</p>}
+                  <p class="post-meta">
+                    {hit.document.date?.slice(0, 4)}
+                    {hit.document.categories?.length
+                      ? ` · ${hit.document.categories.join(', ')}`
+                      : ''}
+                  </p>
+                </li>
+              ))}
+            </ol>
+            {totalPages > 1 && (
+              <nav class="pagination" aria-label="Search result pages">
+                <span>
+                  {page() > 1 && (
+                    <button type="button" onClick={() => syncUrl(page() - 1)}>
+                      ← Previous
+                    </button>
+                  )}
+                </span>
+                <span>
+                  Page {page()} of {totalPages}
+                </span>
+                <span>
+                  {page() < totalPages && (
+                    <button type="button" onClick={() => syncUrl(page() + 1)}>
+                      Next →
+                    </button>
+                  )}
+                </span>
+              </nav>
+            )}
+          </>
+        )}
       </section>
     </ContentLayout>
-  );
-}
-
-function SearchResults({
-  engine,
-  query,
-  page,
-  onPageChange,
-}: {
-  engine: SearchEngine;
-  query: () => string;
-  page: () => number;
-  onPageChange: (page: number) => void;
-}) {
-  const result = engine.search({
-    query: query(),
-    offset: (page() - 1) * SEARCH_PAGE_SIZE,
-    limit: SEARCH_PAGE_SIZE,
-  });
-  const totalPages = Math.max(1, Math.ceil(result.total / SEARCH_PAGE_SIZE));
-
-  if (result.total === 0)
-    return <p class="search-empty">No reviews matched those search choices.</p>;
-
-  return (
-    <>
-      <p class="search-count" role="status">
-        {result.total} result{result.total === 1 ? '' : 's'}
-      </p>
-      <ol class="search-results" start={(page() - 1) * SEARCH_PAGE_SIZE + 1}>
-        {result.hits.map((hit) => (
-          <li key={hit.document.id}>
-            <h2>
-              <SiteLink href={hit.document.url}>{hit.document.title}</SiteLink>
-            </h2>
-            {hit.document.summary && <p>{hit.document.summary}</p>}
-            <p class="post-meta">
-              {hit.document.date?.slice(0, 4)}
-              {hit.document.categories?.length
-                ? ` · ${hit.document.categories.join(', ')}`
-                : ''}
-            </p>
-          </li>
-        ))}
-      </ol>
-      {totalPages > 1 && (
-        <nav class="pagination" aria-label="Search result pages">
-          <span>
-            {page() > 1 && (
-              <button type="button" onClick={() => onPageChange(page() - 1)}>
-                ← Previous
-              </button>
-            )}
-          </span>
-          <span>
-            Page {page()} of {totalPages}
-          </span>
-          <span>
-            {page() < totalPages && (
-              <button type="button" onClick={() => onPageChange(page() + 1)}>
-                Next →
-              </button>
-            )}
-          </span>
-        </nav>
-      )}
-    </>
   );
 }
