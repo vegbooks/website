@@ -1,6 +1,6 @@
 import { state } from '@askrjs/askr';
 import { SearchIcon } from '@askrjs/lucide/icons/search';
-import { resource } from '@askrjs/askr/resources';
+import { stream } from '@askrjs/askr/resources';
 import { currentRoute, updateRouteQuery } from '@askrjs/askr/router';
 import { ContentLayout } from '../components/content-layout';
 import { SearchEngine } from '../search';
@@ -16,24 +16,22 @@ export function SearchPage() {
     Math.max(1, Number(route.query.get('page')) || 1)
   );
 
-  const browserReady = typeof window !== 'undefined';
-  const search = resource(
-    ({ signal }) => {
-      if (typeof window === 'undefined') return null;
-      return fetch(sitePath('/search-index.json'), { signal }).then(
-        async (response) => {
-          if (!response.ok)
-            throw new Error(`Search index returned ${response.status}`);
-          return new SearchEngine((await response.json()) as SearchIndex);
-        }
-      );
+  // A one-shot stream starts after hydration commit. resource() currently
+  // re-enters SSR data rules here: https://github.com/askrjs/askr/issues/225
+  const search = stream<SearchEngine>(
+    async function* ({ signal }) {
+      const response = await fetch(sitePath('/search-index.json'), { signal });
+      if (!response.ok)
+        throw new Error(`Search index returned ${response.status}`);
+      yield new SearchEngine((await response.json()) as SearchIndex);
     },
-    [browserReady]
+    { deps: [] }
   );
 
-  const currentEngine = search.value;
-  const result = currentEngine
-    ? currentEngine.search({
+  const engine = search.value;
+  const error = search.error;
+  const result = engine
+    ? engine.search({
         query: query(),
         offset: (page() - 1) * SEARCH_PAGE_SIZE,
         limit: SEARCH_PAGE_SIZE,
@@ -92,9 +90,9 @@ export function SearchPage() {
             </span>
           </label>
         </form>
-        {search.error ? (
-          <p role="alert">Search is unavailable: {search.error.message}</p>
-        ) : !currentEngine ? (
+        {error ? (
+          <p role="alert">Search is unavailable: {error.message}</p>
+        ) : !engine ? (
           <p role="status">Loading the search index…</p>
         ) : result?.total === 0 ? (
           <p class="search-empty">No reviews matched those search choices.</p>
