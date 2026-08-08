@@ -1,6 +1,6 @@
 import { state } from '@askrjs/askr';
 import { SearchIcon } from '@askrjs/lucide/icons/search';
-import { stream } from '@askrjs/askr/resources';
+import { resource } from '@askrjs/askr/resources';
 import { currentRoute, updateRouteQuery } from '@askrjs/askr/router';
 import { ContentLayout } from '../components/content-layout';
 import { SearchEngine } from '../search';
@@ -16,16 +16,19 @@ export function SearchPage() {
     Math.max(1, Number(route.query.get('page')) || 1)
   );
 
-  // A one-shot stream starts after hydration commit. resource() currently
-  // re-enters SSR data rules here: https://github.com/askrjs/askr/issues/225
-  const search = stream<SearchEngine>(
-    async function* ({ signal }) {
-      const response = await fetch(sitePath('/search-index.json'), { signal });
-      if (!response.ok)
-        throw new Error(`Search index returned ${response.status}`);
-      yield new SearchEngine((await response.json()) as SearchIndex);
+  const browserReady = typeof window !== 'undefined';
+  const search = resource(
+    ({ signal }) => {
+      if (!browserReady) return null;
+      return fetch(sitePath('/search-index.json'), { signal }).then(
+        async (response) => {
+          if (!response.ok)
+            throw new Error(`Search index returned ${response.status}`);
+          return new SearchEngine((await response.json()) as SearchIndex);
+        }
+      );
     },
-    { deps: [] }
+    [browserReady]
   );
 
   const engine = search.value;

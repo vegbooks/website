@@ -1,8 +1,9 @@
 import { state, type Props } from '@askrjs/askr';
 import { SearchIcon } from '@askrjs/lucide/icons/search';
-import { currentRoute, Link } from '@askrjs/askr/router';
+import { onRouteChange } from '@askrjs/askr/resources';
+import { Link } from '@askrjs/askr/router';
 import { NavLink } from '@askrjs/themes/components';
-import { isActiveSitePath, sitePath } from '../site-base';
+import { sitePath } from '../site-base';
 import { OptimizedImage } from '../components/optimized-image';
 
 const navItems = [
@@ -28,7 +29,7 @@ const socialItems = [
 
 export function SiteLayout({ children }: Props) {
   const [menuOpen, setMenuOpen] = state(false);
-  const currentPath = currentRoute().path;
+  onRouteChange(() => setMenuOpen(false));
   return (
     <>
       <a class="skip-link" href="#main-content">
@@ -36,11 +37,7 @@ export function SiteLayout({ children }: Props) {
       </a>
       <div class="site-shell">
         <header class="site-header">
-          <Link
-            class="wordmark"
-            href={sitePath('/')}
-            aria-label="Vegbooks home"
-          >
+          <Link class="wordmark" href="/" aria-label="Vegbooks home">
             <picture>
               <source
                 type="image/avif"
@@ -74,22 +71,15 @@ export function SiteLayout({ children }: Props) {
             aria-label="Primary navigation"
           >
             {navItems.map(([label, href]) => (
-              <NavLink
-                key={href}
-                href={sitePath(href)}
-                active={isActiveSitePath(currentPath, href)}
-                onClick={() => setMenuOpen(false)}
-              >
+              <NavLink key={href} href={href}>
                 {label}
               </NavLink>
             ))}
             <NavLink
               class="site-nav__search"
               aria-label="Search"
-              href={sitePath('/search/')}
-              active={isActiveSitePath(currentPath, '/search/')}
+              href="/search/"
               title="Search"
-              onClick={() => setMenuOpen(false)}
             >
               <SearchIcon size={18} aria-hidden="true" />
             </NavLink>

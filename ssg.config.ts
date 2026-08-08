@@ -6,8 +6,9 @@ import { withThemeStyles } from '@askrjs/themes/ssr';
 import { routeMeta } from './src/content/metadata';
 import { archiveLastModified } from './src/content/site-metadata';
 import { createVegbooksRouteRegistry } from './src/pages/_routes';
+import { siteBasePath } from './src/site-base';
 
-export const registry = createVegbooksRouteRegistry();
+export const registry = createVegbooksRouteRegistry(siteBasePath);
 export const outputDir = 'dist';
 
 let clientTemplate: string | undefined;
@@ -35,6 +36,9 @@ export const staticConfig = {
   ],
   siteUrl: 'https://vegbooks.org',
   concurrency: 8,
+  outputReport: {
+    basePath: process.env.SITE_BASE_PATH,
+  },
   sitemap: {
     defaults: { lastModified: archiveLastModified },
     routes: { '/404': false, '/search': false },

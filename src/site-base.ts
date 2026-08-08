@@ -1,6 +1,3 @@
-import type { JSXElement } from '@askrjs/askr/jsx-runtime';
-import { deliveryImagePath } from './image-paths.ts';
-
 export function normalizeSiteBasePath(value: string | undefined): string {
   if (!value || value === '/') return '';
   const normalized = `/${value}`.replace(/\/{2,}/g, '/').replace(/\/$/, '');
@@ -36,34 +33,8 @@ export function stripSiteBase(
     : pathname;
 }
 
-export function isActiveSitePath(
-  currentPath: string,
-  targetPath: string,
-  basePath: string = siteBasePath
-): boolean {
-  const normalize = (value: string) => {
-    const stripped = stripSiteBase(value, basePath);
-    return stripped !== '/' && stripped.endsWith('/')
-      ? stripped.slice(0, -1)
-      : stripped;
-  };
-  const current = normalize(currentPath);
-  const target = normalize(targetPath);
-  return target === '/'
-    ? current === '/'
-    : current === target || current.startsWith(`${target}/`);
-}
-
 export function sitePath(value: string): string {
   return addSiteBase(value);
-}
-
-export function prefixElementSiteUrls(
-  element: JSXElement,
-  basePath: string = siteBasePath
-): JSXElement {
-  prefixRenderableSiteUrls(element, basePath);
-  return element;
 }
 
 const viteBaseUrl =
@@ -77,32 +48,3 @@ const processBasePath =
 export const siteBasePath = normalizeSiteBasePath(
   viteBaseUrl ?? processBasePath
 );
-
-function prefixRenderableSiteUrls(value: unknown, basePath: string): void {
-  if (Array.isArray(value)) {
-    for (const child of value) prefixRenderableSiteUrls(child, basePath);
-    return;
-  }
-  if (!isJSXElement(value)) return;
-
-  if (typeof value.type === 'string') {
-    for (const attribute of ['action', 'href', 'poster', 'src', 'srcSet']) {
-      const current = value.props[attribute];
-      if (typeof current === 'string')
-        value.props[attribute] = addSiteBase(
-          deliveryImagePath(current, 'webp') ?? current,
-          basePath
-        );
-    }
-  }
-  prefixRenderableSiteUrls(value.props.children, basePath);
-}
-
-function isJSXElement(value: unknown): value is JSXElement {
-  return (
-    typeof value === 'object' &&
-    value !== null &&
-    '$$typeof' in value &&
-    (value as { $$typeof: unknown }).$$typeof === Symbol.for('askr.element')
-  );
-}
