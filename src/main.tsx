@@ -15,7 +15,11 @@ async function main() {
     await hydrateSPA({
       root,
       registry: routeRegistry,
-      hydrate: { verifyMarkup: true },
+      hydrate: {
+        // Static HTML cannot include query-derived client state yet.
+        // https://github.com/askrjs/askr/issues/253
+        verifyMarkup: window.location.search === '',
+      },
     });
     return;
   }
